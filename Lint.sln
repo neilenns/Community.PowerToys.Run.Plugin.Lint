@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35222.181
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Community.PowerToys.Run.Plugin.Lint", "src\Community.PowerToys.Run.Plugin.Lint\Community.PowerToys.Run.Plugin.Lint.csproj", "{DEA5B346-2C3E-4E59-8500-0CAB5CA99449}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Community.PowerToys.Run.Plugin.Lint.Tests", "tests\Community.PowerToys.Run.Plugin.Lint.Tests\Community.PowerToys.Run.Plugin.Lint.Tests.csproj", "{0BAFB0F3-4846-454F-8577-C7189DE25125}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DEA5B346-2C3E-4E59-8500-0CAB5CA99449}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEA5B346-2C3E-4E59-8500-0CAB5CA99449}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEA5B346-2C3E-4E59-8500-0CAB5CA99449}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEA5B346-2C3E-4E59-8500-0CAB5CA99449}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BAFB0F3-4846-454F-8577-C7189DE25125}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BAFB0F3-4846-454F-8577-C7189DE25125}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BAFB0F3-4846-454F-8577-C7189DE25125}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BAFB0F3-4846-454F-8577-C7189DE25125}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A356C28C-E8D3-4522-8BEC-ED1D95BD89CB}
+	EndGlobalSection
+EndGlobal
