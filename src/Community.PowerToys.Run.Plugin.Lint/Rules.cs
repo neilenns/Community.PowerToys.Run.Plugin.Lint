@@ -244,7 +244,7 @@ public partial class PluginMetadataRules(Package package, Repository repository)
         string[] actionKeyword = ["=", "?", "!!", ".", "o:", ":", "!", ">", ")", "%%", "#", "//", "{", "??", "$", "_", "<",];
 
         if (!Guid.TryParseExact(metadata.ID, "N", out Guid _)) yield return "ID is invalid";
-        if (actionKeyword.Contains(metadata.ActionKeyword)) yield return "ActionKeyword is not uniqe";
+        if (actionKeyword.Contains(metadata.ActionKeyword)) yield return "ActionKeyword is not unique";
         if (metadata.Name != RootFolder()) yield return "Name does not match plugin folder";
         if (metadata.Author != repository.owner.login) yield return "Author does not match repo owner";
         if (!Version.TryParse(metadata.Version, out Version? _)) yield return "Version is invalid";

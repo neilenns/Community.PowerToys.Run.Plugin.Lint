@@ -247,7 +247,7 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
             subject = new PluginMetadataRules(package, repository);
             subject.Validate().Clean().Should().BeEquivalentTo(
                 "ID is invalid",
-                "ActionKeyword is not uniqe",
+                "ActionKeyword is not unique",
                 "Name does not match plugin folder",
                 "Author does not match repo owner",
                 "Version is invalid",
