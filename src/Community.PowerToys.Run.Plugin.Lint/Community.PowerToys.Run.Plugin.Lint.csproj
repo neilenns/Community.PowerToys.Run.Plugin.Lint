@@ -5,8 +5,15 @@
     <TargetFramework>net8.0</TargetFramework>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>ptrun-lint</ToolCommandName>
-    <Version>0.1.0</Version>
-    <PackageReleaseNotes>Initial release</PackageReleaseNotes>
+    <Version>0.2.0</Version>
+    <PackageReleaseNotes>
+Fix:
+- IcoPathDark missing in package
+- IcoPathLight missing in package
+
+Lax:
+- Filename does not match "&lt;name&gt;-&lt;version&gt;-&lt;platform&gt;.zip" convention
+    </PackageReleaseNotes>
     <Authors>Henrik Lau Eriksson</Authors>
     <Description>Linter for PowerToys Run community plugins</Description>
     <PackageId>Community.PowerToys.Run.Plugin.Lint</PackageId>
