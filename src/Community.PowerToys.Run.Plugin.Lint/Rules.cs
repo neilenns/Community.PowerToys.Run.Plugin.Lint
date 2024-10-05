@@ -192,7 +192,7 @@ public partial class PackageRules(Package package) : IRule
         if (!PackageRegex().IsMatch(package.FileInfo.Name)) yield return $"Filename does not match {"<name>-<version>-<platform>.zip".ToQuote()} convention";
     }
 
-    [GeneratedRegex(@"^\w+-\d+\.\d+\.\d+-(arm64|x64)\.zip$")]
+    [GeneratedRegex(@"^(?<name>[\w\.]+)-(?<version>\d+\.\d+\.\d+)-(?<platform>(?i:arm64|x64))\.zip$")]
     private static partial Regex PackageRegex();
 }
 
@@ -258,8 +258,9 @@ public partial class PluginMetadataRules(Package package, Repository repository)
 
         string? RootFolder() => package.ZipArchive.Entries.Select(x => x.FullName.Split('\\', '/')[0]).Distinct().FirstOrDefault();
         string? GetFilenameVersion() => FilenameVersionRegex().Match(package.FileInfo.Name).Value;
-        bool Exists(string path) => package.ZipArchive.Entries.Any(x => x.FullName.EndsWith(path, StringComparison.Ordinal));
+        bool Exists(string path) => package.ZipArchive.Entries.Any(x => NormalizePath(x.FullName).EndsWith(NormalizePath(path), StringComparison.Ordinal));
         bool DynamicLoadingUnnecessary(bool enabled) => enabled && package.ZipArchive.Entries.Count(x => x.Name.EndsWith(".dll", StringComparison.Ordinal)) == 1;
+        string NormalizePath(string path) => path.Replace('\\', '/');
     }
 
     [GeneratedRegex(@"(\d+\.\d+\.\d+)")]

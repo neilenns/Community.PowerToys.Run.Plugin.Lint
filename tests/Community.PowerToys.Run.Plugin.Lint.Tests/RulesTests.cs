@@ -162,6 +162,9 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
 
             subject = new PackageRules(new(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip"));
             subject.Validate().Clean().Should().BeEmpty();
+
+            subject = new PackageRules(new(new(), @"..\..\..\Packages\Valid.Name-0.82.1-X64.zip"));
+            subject.Validate().Clean().Should().BeEmpty();
         }
 
         [Test]
@@ -260,6 +263,11 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
                 "DynamicLoading is unnecessary");
 
             package = new Package(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip");
+            package.Load();
+            subject = new PluginMetadataRules(package, repository);
+            subject.Validate().Clean().Should().BeEmpty();
+
+            package = new Package(new(), @"..\..\..\Packages\ValidZipPathsWithSlash-0.82.1-x64.zip");
             package.Load();
             subject = new PluginMetadataRules(package, repository);
             subject.Validate().Clean().Should().BeEmpty();
