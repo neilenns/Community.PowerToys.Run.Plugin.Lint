@@ -37,7 +37,7 @@ Lax:
 
   <ItemGroup>
     <PackageReference Include="Mono.Cecil" Version="0.11.6" />
-    <PackageReference Include="NReco.Logging.File" Version="1.2.1" />
+    <PackageReference Include="NReco.Logging.File" Version="1.2.2" />
     <PackageReference Include="Spectre.Console.Cli" Version="0.49.1" />
   </ItemGroup>
 
