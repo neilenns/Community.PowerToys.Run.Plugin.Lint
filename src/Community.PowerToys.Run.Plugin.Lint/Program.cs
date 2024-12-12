@@ -7,7 +7,7 @@ using var factory = LoggerFactory.Create(builder => builder.AddFile("ptrun-lint.
 var logger = factory.CreateLogger<Program>();
 
 return await AnsiConsole.Status()
-    .StartAsync("Linting", async ctx =>
+    .StartAsync("Linting", async _ =>
     {
         logger.LogInformation("Linting: {Args}", args);
 

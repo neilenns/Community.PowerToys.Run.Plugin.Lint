@@ -216,8 +216,8 @@ public class PackageContentRules(Package package) : IRule
         if (!files.Contains("plugin.json")) yield return $"Metadata {"plugin.json".ToQuote()} missing";
         if (!files.Any(x => x.EndsWith(".dll", StringComparison.Ordinal))) yield return $"Assembly {".dll".ToQuote()} missing";
 
-        string[] RootFolders() => package.ZipArchive.Entries.Select(x => x.FullName.Split('\\', '/')[0]).Distinct().ToArray();
-        string[] Files() => package.ZipArchive.Entries.Select(x => x.Name).ToArray();
+        string[] RootFolders() => [.. package.ZipArchive.Entries.Select(x => x.FullName.Split('\\', '/')[0]).Distinct()];
+        string[] Files() => [.. package.ZipArchive.Entries.Select(x => x.Name)];
     }
 }
 
@@ -296,7 +296,7 @@ public class PluginDependenciesRules(Package package) : IRule
             if (files.Contains($"{package}.dll")) yield return $"Unnecessary dependency: {package.ToDependency()}, already defined in Central Package Management {"Directory.Packages.props".ToFilename()}";
         }
 
-        string[] Files() => package.ZipArchive.Entries.Select(x => x.Name).ToArray();
+        string[] Files() => [.. package.ZipArchive.Entries.Select(x => x.Name)];
         string[] PowerToysRunDependencies() => ["PowerToys.Common.UI.dll", "PowerToys.ManagedCommon.dll", "PowerToys.Settings.UI.Lib.dll", "Wox.Infrastructure.dll", "Wox.Plugin.dll"];
         string[] PowerToysPackages()
         {
