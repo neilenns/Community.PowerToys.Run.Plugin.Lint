@@ -30,6 +30,13 @@ public static partial class Extensions
         return reader.ReadToEnd();
     }
 
+    public static bool IsZip(this Asset asset)
+    {
+        return
+            (asset?.content_type != null && asset.content_type.Contains("zip", StringComparison.OrdinalIgnoreCase)) ||
+            (asset?.name != null && asset.name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase));
+    }
+
     [GeneratedRegex(@"https:\/\/github.com\/([^\/]+)\/([^\/]+)$")]
     private static partial Regex GitHubRegex();
 }

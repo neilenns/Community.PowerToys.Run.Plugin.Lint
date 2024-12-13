@@ -20,7 +20,7 @@ public sealed class ReleaseHandler(Release? release, ILogger logger) : IReleaseH
         using var client = new HttpClient();
         foreach (var asset in release.assets)
         {
-            if (!asset.content_type.Contains("zip", StringComparison.OrdinalIgnoreCase)) continue;
+            if (!asset.IsZip()) continue;
 
             var path = Path.Combine(Path.GetTempPath(), asset.name);
 

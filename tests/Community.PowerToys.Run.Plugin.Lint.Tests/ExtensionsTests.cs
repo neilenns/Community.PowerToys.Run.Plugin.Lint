@@ -28,5 +28,16 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
             "".GetEmbeddedResourceContent().Should().BeNull();
             ((string)null!).GetEmbeddedResourceContent().Should().BeNull();
         }
+
+        [Test]
+        public void IsZip_should_determine_if_Asset_is_zip_file()
+        {
+            new Asset { content_type = "application/x-zip-compressed" }.IsZip().Should().BeTrue();
+            new Asset { name = "Sample-0.2.0-x64.zip" }.IsZip().Should().BeTrue();
+            new Asset { name = "JetbrainsProjects-v1.0.1-x64.zip", content_type = "binary/octet-stream" }.IsZip().Should().BeTrue();
+            new Asset { name = "", content_type = "" }.IsZip().Should().BeFalse();
+            new Asset().IsZip().Should().BeFalse();
+            ((Asset)null!).IsZip().Should().BeFalse();
+        }
     }
 }
