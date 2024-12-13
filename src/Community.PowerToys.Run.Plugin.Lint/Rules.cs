@@ -134,7 +134,7 @@ public class ReleaseRules(Release? release) : IRule
             yield break;
         }
 
-        if (!release.assets.Any(x => x.content_type.Contains("zip", StringComparison.OrdinalIgnoreCase)))
+        if (!release.assets.Any(x => x.IsZip()))
         {
             yield return $"Asset {".zip".ToQuote()} missing";
             yield break;
