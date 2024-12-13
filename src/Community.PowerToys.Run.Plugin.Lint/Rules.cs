@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Runtime.Versioning;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -323,17 +322,11 @@ public class AssemblyRules(Package package) : IRule
             yield break;
         }
 
-        if (AttributeValue(typeof(TargetFrameworkAttribute)) != ".NETCoreApp,Version=v8.0") yield return $"Target framework should be {"net8.0".ToQuote()}";
-        if (AttributeValue(typeof(TargetPlatformAttribute)) != "Windows7.0") yield return $"Target platform should be {"windows".ToQuote()}";
+        if (!package.HasValidTargetFramework()) yield return $"Target framework should be {"net8.0".ToQuote()}";
+        if (!package.HasValidTargetPlatform()) yield return $"Target platform should be {"windows".ToQuote()}";
 
         var pluginId = PluginID(MainTypeDefinition());
         if (pluginId != package.Metadata?.ID) yield return $"Main.PluginID does not match metadata {"plugin.json".ToFilename()} ID";
-
-        string? AttributeValue(Type type)
-        {
-            var attribute = package.AssemblyDefinition.CustomAttributes.SingleOrDefault(x => x.AttributeType.FullName == type.FullName);
-            return attribute?.ConstructorArguments[0].Value as string;
-        }
 
         TypeDefinition? MainTypeDefinition()
         {
