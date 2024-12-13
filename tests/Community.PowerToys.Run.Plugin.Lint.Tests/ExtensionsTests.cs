@@ -39,5 +39,31 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
             new Asset().IsZip().Should().BeFalse();
             ((Asset)null!).IsZip().Should().BeFalse();
         }
+
+        [Test]
+        public void HasValidTargetFramework_should_validate_Assembly()
+        {
+            new Package(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip").Load()
+                .HasValidTargetFramework().Should().BeTrue();
+            new Package(new(), @"..\..\..\Packages\InvalidTarget-0.82.1-x64.zip").Load()
+                .HasValidTargetFramework().Should().BeFalse();
+            new Package(new(), "Community.PowerToys.Run.Plugin.Lint.Tests.dll")
+                .HasValidTargetFramework().Should().BeFalse();
+            ((Package)null!)
+                .HasValidTargetFramework().Should().BeFalse();
+        }
+
+        [Test]
+        public void HasValidTargetPlatform_should_validate_Assembly()
+        {
+            new Package(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip").Load()
+                .HasValidTargetPlatform().Should().BeTrue();
+            new Package(new(), @"..\..\..\Packages\InvalidTarget-0.82.1-x64.zip").Load()
+                .HasValidTargetPlatform().Should().BeFalse();
+            new Package(new(), "Community.PowerToys.Run.Plugin.Lint.Tests.dll")
+                .HasValidTargetPlatform().Should().BeFalse();
+            ((Package)null!)
+                .HasValidTargetPlatform().Should().BeFalse();
+        }
     }
 }

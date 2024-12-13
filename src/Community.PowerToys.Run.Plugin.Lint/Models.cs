@@ -29,7 +29,7 @@ public sealed class Package(Asset asset, string path) : IDisposable
     public Metadata? Metadata { get; private set; }
     public AssemblyDefinition? AssemblyDefinition { get; private set; }
 
-    public void Load()
+    public Package Load()
     {
         FileStream = FileInfo.OpenRead();
         ZipArchive = new ZipArchive(FileStream, ZipArchiveMode.Read);
@@ -56,6 +56,8 @@ public sealed class Package(Asset asset, string path) : IDisposable
             memoryStream.Position = 0; // rewind
             return AssemblyDefinition.ReadAssembly(memoryStream);
         }
+
+        return this;
     }
 
     public void Dispose()

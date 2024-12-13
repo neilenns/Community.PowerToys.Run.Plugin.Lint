@@ -1,3 +1,4 @@
+using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
 
 namespace Community.PowerToys.Run.Plugin.Lint;
@@ -35,6 +36,22 @@ public static partial class Extensions
         return
             (asset?.content_type != null && asset.content_type.Contains("zip", StringComparison.OrdinalIgnoreCase)) ||
             (asset?.name != null && asset.name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase));
+    }
+
+    public static bool HasValidTargetFramework(this Package package)
+    {
+        return package.AssemblyAttributeValue(typeof(TargetFrameworkAttribute)) == ".NETCoreApp,Version=v8.0";
+    }
+
+    public static bool HasValidTargetPlatform(this Package package)
+    {
+        return package.AssemblyAttributeValue(typeof(TargetPlatformAttribute))?.StartsWith("Windows", StringComparison.Ordinal) == true;
+    }
+
+    private static string? AssemblyAttributeValue(this Package package, Type type)
+    {
+        var attribute = package?.AssemblyDefinition?.CustomAttributes.SingleOrDefault(x => x.AttributeType.FullName == type.FullName);
+        return attribute?.ConstructorArguments[0].Value as string;
     }
 
     [GeneratedRegex(@"https:\/\/github.com\/([^\/]+)\/([^\/]+)$")]
