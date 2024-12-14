@@ -48,6 +48,11 @@ public static partial class Extensions
         return package.AssemblyAttributeValue(typeof(TargetPlatformAttribute))?.StartsWith("Windows", StringComparison.Ordinal) == true;
     }
 
+    public static bool HasValidAuthor(this Metadata metadata, User user)
+    {
+        return string.IsNullOrEmpty(metadata?.Author) ? false : metadata.Author == user?.login || metadata?.Author == user?.name;
+    }
+
     private static string? AssemblyAttributeValue(this Package package, Type type)
     {
         var attribute = package?.AssemblyDefinition?.CustomAttributes.SingleOrDefault(x => x.AttributeType.FullName == type.FullName);

@@ -5,6 +5,7 @@ namespace Community.PowerToys.Run.Plugin.Lint;
 
 public interface IGitHubClient
 {
+    Task<User?> GetUserAsync();
     Task<Repository?> GetRepositoryAsync();
     Task<Readme?> GetReadmeAsync();
     Task<Release?> GetLatestReleaseAsync();
@@ -35,6 +36,20 @@ public class GitHubClient : IGitHubClient
     private GitHubOptions Options { get; }
     private HttpClient HttpClient { get; }
     private ILogger Logger { get; }
+
+    public async Task<User?> GetUserAsync()
+    {
+        try
+        {
+            // https://docs.github.com/en/rest/users/users?apiVersion=2022-11-28#get-a-user
+            return await HttpClient.GetFromJsonAsync<User>($"/users/{Options.Owner}");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "GetUserAsync failed.");
+            return null;
+        }
+    }
 
     public async Task<Repository?> GetRepositoryAsync()
     {
@@ -88,11 +103,21 @@ public class GitHubOptions
 
 /*
 {
+  "login": "octocat",
+  "name": "monalisa octocat"
+}
+ */
+
+public class User
+{
+    public string login { get; set; }
+    public string name { get; set; }
+}
+
+/*
+{
   "name": "Hello-World",
   "full_name": "octocat/Hello-World",
-  "owner": {
-    "login": "octocat"
-  },
   "html_url": "https://github.com/octocat/Hello-World",
   "description": "This your first repo!",
   "topics": [
@@ -110,16 +135,10 @@ public class Repository
 {
     public string name { get; set; }
     public string full_name { get; set; }
-    public Owner owner { get; set; }
     public string html_url { get; set; }
     public string description { get; set; }
     public string[] topics { get; set; }
     public License? license { get; set; }
-}
-
-public class Owner
-{
-    public string login { get; set; }
 }
 
 public class License
