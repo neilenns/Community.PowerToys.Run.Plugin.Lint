@@ -65,5 +65,18 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
             ((Package)null!)
                 .HasValidTargetPlatform().Should().BeFalse();
         }
+
+        [Test]
+        public void HasValidAuthor_should_validate_Author()
+        {
+            new Metadata { Author = "hlaueriksson" }.HasValidAuthor(new() { login = "hlaueriksson" }).Should().BeTrue();
+            new Metadata { Author = "Henrik Lau Eriksson" }.HasValidAuthor(new() { name = "Henrik Lau Eriksson" }).Should().BeTrue();
+            new Metadata { Author = "Foo" }.HasValidAuthor(new() { login = "Bar" }).Should().BeFalse();
+            new Metadata { Author = "Foo" }.HasValidAuthor(new()).Should().BeFalse();
+            new Metadata { Author = "Foo" }.HasValidAuthor(null!).Should().BeFalse();
+            new Metadata { Author = "" }.HasValidAuthor(new() { name = "" }).Should().BeFalse();
+            new Metadata().HasValidAuthor(new()).Should().BeFalse();
+            ((Metadata)null!).HasValidAuthor(null!).Should().BeFalse();
+        }
     }
 }

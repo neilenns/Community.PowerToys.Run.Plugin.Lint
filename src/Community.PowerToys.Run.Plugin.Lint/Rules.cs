@@ -220,7 +220,7 @@ public class PackageContentRules(Package package) : IRule
     }
 }
 
-public partial class PluginMetadataRules(Package package, Repository repository) : IRule
+public partial class PluginMetadataRules(Package package, Repository repository, User? user) : IRule
 {
     public int Id => 1401;
     public string Description => $"Plugin metadata should be valid {package.ToString().ToFilename()}";
@@ -239,13 +239,19 @@ public partial class PluginMetadataRules(Package package, Repository repository)
             yield break;
         }
 
+        if (user == null)
+        {
+            yield return "User missing";
+            yield break;
+        }
+
         var metadata = package.Metadata;
         string[] actionKeyword = ["=", "?", "!!", ".", "o:", ":", "!", ">", ")", "%%", "#", "//", "{", "??", "$", "_", "<",];
 
         if (!Guid.TryParseExact(metadata.ID, "N", out Guid _)) yield return "ID is invalid";
         if (actionKeyword.Contains(metadata.ActionKeyword)) yield return "ActionKeyword is not unique";
         if (metadata.Name != RootFolder()) yield return "Name does not match plugin folder";
-        if (metadata.Author != repository.owner.login) yield return "Author does not match repo owner";
+        if (!metadata.HasValidAuthor(user)) yield return "Author does not match GitHub user";
         if (!Version.TryParse(metadata.Version, out Version? _)) yield return "Version is invalid";
         if (metadata.Version != GetFilenameVersion()) yield return "Version does not match filename version";
         if (metadata.Website != repository.html_url) yield return "Website does not match repo URL";

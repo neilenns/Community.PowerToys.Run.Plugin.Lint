@@ -86,10 +86,11 @@ Logs are written to a file, `ptrun-lint.log`, in the same directory as the tool 
 | `PTRUN1401` | Plugin metadata should be valid (`<package>`) |
 | | Package missing |
 | | Repository missing |
+| | User missing |
 | | ID is invalid |
 | | ActionKeyword is not unique |
 | | Name does not match plugin folder |
-| | Author does not match repo owner |
+| | Author does not match GitHub user |
 | | Version is invalid |
 | | Version does not match filename version |
 | | Website does not match repo URL |

@@ -211,19 +211,19 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
         [Test]
         public void PluginMetadataRules_should_validate_Package()
         {
-            var subject = new PluginMetadataRules(null!, new());
+            var subject = new PluginMetadataRules(null!, new(), new());
             subject.Validate().Clean().Should().BeEquivalentTo(
                 "Package missing");
 
             var package = new Package(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip");
             package.Load();
-            subject = new PluginMetadataRules(package, null!);
+            subject = new PluginMetadataRules(package, null!, new());
             subject.Validate().Clean().Should().BeEquivalentTo(
                 "Repository missing");
 
             package = new Package(new(), @"..\..\..\Packages\NoMetadata-0.82.1-x64.zip");
             package.Load();
-            subject = new PluginMetadataRules(package, new());
+            subject = new PluginMetadataRules(package, new(), new());
             subject.Validate().Clean().Should().BeEquivalentTo(
                 "Package missing");
 
@@ -244,15 +244,14 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
             });
             var repository = new Repository
             {
-                owner = new() { login = "hlaueriksson" },
                 html_url = "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Valid",
             };
-            subject = new PluginMetadataRules(package, repository);
+            subject = new PluginMetadataRules(package, repository, new());
             subject.Validate().Clean().Should().BeEquivalentTo(
                 "ID is invalid",
                 "ActionKeyword is not unique",
                 "Name does not match plugin folder",
-                "Author does not match repo owner",
+                "Author does not match GitHub user",
                 "Version is invalid",
                 "Version does not match filename version",
                 "Website does not match repo URL",
@@ -264,12 +263,13 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
 
             package = new Package(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip");
             package.Load();
-            subject = new PluginMetadataRules(package, repository);
+            var user = new User { login = "hlaueriksson" };
+            subject = new PluginMetadataRules(package, repository, user);
             subject.Validate().Clean().Should().BeEmpty();
 
             package = new Package(new(), @"..\..\..\Packages\ValidZipPathsWithSlash-0.82.1-x64.zip");
             package.Load();
-            subject = new PluginMetadataRules(package, repository);
+            subject = new PluginMetadataRules(package, repository, user);
             subject.Validate().Clean().Should().BeEmpty();
 
             static void SetMetadata(Package package, Metadata metadata)

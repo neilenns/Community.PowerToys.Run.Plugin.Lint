@@ -53,6 +53,8 @@ public class Worker(string[] args, ILogger logger)
 
         Validate(rules);
 
+        var user = await client.GetUserAsync();
+
         foreach (var package in packages)
         {
             rules =
@@ -61,7 +63,7 @@ public class Worker(string[] args, ILogger logger)
                 new PackageRules(package),
                 new PackageContentRules(package),
                 new PluginDependenciesRules(package),
-                new PluginMetadataRules(package, repository!),
+                new PluginMetadataRules(package, repository!, user),
                 new AssemblyRules(package),
             ];
 
