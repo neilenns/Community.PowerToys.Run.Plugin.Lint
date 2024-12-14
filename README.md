@@ -74,7 +74,6 @@ Logs are written to a file, `ptrun-lint.log`, in the same directory as the tool 
 | `PTRUN1202` | Release notes should be valid (`<package>`) |
 | | Release notes missing |
 | | Package missing |
-| | Hash "`<hash>`" missing |
 | `PTRUN1301` | Package should be valid (`<package>`) |
 | | Package missing |
 | | Filename does not match "`<name>-<version>-<platform>.zip`" convention |
@@ -83,6 +82,10 @@ Logs are written to a file, `ptrun-lint.log`, in the same directory as the tool 
 | | Plugin folder missing |
 | | Metadata "`plugin.json`" missing |
 | | Assembly "`.dll`" missing |
+| `PTRUN1303` | Package checksum should be valid (`<package>`) |
+| | Release notes missing |
+| | Package missing |
+| | Hash "`<hash>`" missing |
 | `PTRUN1401` | Plugin metadata should be valid (`<package>`) |
 | | Package missing |
 | | Repository missing |

@@ -5,6 +5,7 @@ namespace Community.PowerToys.Run.Plugin.Lint;
 public interface IReleaseHandler
 {
     Task<Package[]> GetPackagesAsync();
+    Task<Checksum[]> GetChecksumsAsync();
 }
 
 public sealed class ReleaseHandler(Release? release, ILogger logger) : IReleaseHandler, IDisposable
@@ -30,6 +31,38 @@ public sealed class ReleaseHandler(Release? release, ILogger logger) : IReleaseH
 
             result.Add(new Package(asset, path));
             logger.LogInformation("File downloaded: {Path}", path);
+        }
+
+        return [.. result];
+    }
+
+    public async Task<Checksum[]> GetChecksumsAsync()
+    {
+        if (release == null)
+        {
+            return [];
+        }
+
+        var result = new List<Checksum>();
+        using var client = new HttpClient();
+
+        var asset = release.assets.FirstOrDefault(x => x.IsChecksumsFile());
+
+        if (asset == null)
+        {
+            return [];
+        }
+
+        var content = await client.GetStringAsync(asset.browser_download_url);
+
+        foreach (var line in content.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries))
+        {
+            var tokens = line.Split([' '], 2, StringSplitOptions.RemoveEmptyEntries);
+
+            if (tokens.Length == 2)
+            {
+                result.Add(new Checksum(tokens[0], tokens[1]));
+            }
         }
 
         return [.. result];

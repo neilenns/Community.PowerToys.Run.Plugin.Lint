@@ -41,9 +41,6 @@ public class Worker(string[] args, ILogger logger)
         var readme = await client.GetReadmeAsync();
         var release = await client.GetLatestReleaseAsync();
 
-        var handler = new ReleaseHandler(release, logger);
-        var packages = await handler.GetPackagesAsync();
-
         rules =
         [
             new RepoDetailsRules(repository!),
@@ -53,6 +50,9 @@ public class Worker(string[] args, ILogger logger)
 
         Validate(rules);
 
+        var handler = new ReleaseHandler(release, logger);
+        var packages = await handler.GetPackagesAsync();
+        var checksums = await handler.GetChecksumsAsync();
         var user = await client.GetUserAsync();
 
         foreach (var package in packages)
@@ -62,6 +62,7 @@ public class Worker(string[] args, ILogger logger)
                 new ReleaseNotesRules(release!, package),
                 new PackageRules(package),
                 new PackageContentRules(package),
+                new PackageChecksumRules(release!, package, checksums),
                 new PluginDependenciesRules(package),
                 new PluginMetadataRules(package, repository!, user),
                 new AssemblyRules(package),
