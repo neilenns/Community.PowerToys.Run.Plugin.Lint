@@ -5,6 +5,9 @@ namespace Community.PowerToys.Run.Plugin.Lint;
 
 public static partial class Extensions
 {
+    [GeneratedRegex(@"^https:\/\/github\.com\/([a-zA-Z0-9._-]+)\/([a-zA-Z0-9._-]+)(?:\/)?(?:\?.*|#.*)?$")]
+    public static partial Regex GitHubRegex();
+
     public static GitHubOptions GetGitHubOptions(this string? url)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(url);
@@ -58,7 +61,4 @@ public static partial class Extensions
         var attribute = package?.AssemblyDefinition?.CustomAttributes.SingleOrDefault(x => x.AttributeType.FullName == type.FullName);
         return attribute?.ConstructorArguments[0].Value as string;
     }
-
-    [GeneratedRegex(@"https:\/\/github.com\/([^\/]+)\/([^\/]+)$")]
-    private static partial Regex GitHubRegex();
 }
