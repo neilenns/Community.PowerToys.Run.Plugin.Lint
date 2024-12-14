@@ -40,7 +40,7 @@ public static class RuleStyle
     public static string ToDimmed(this string value) => $"[{Dimmed.ToMarkup()}]{value}[/]";
 }
 
-public partial class ArgsRules(string[] args) : IRule
+public class ArgsRules(string[] args) : IRule
 {
     public int Id => 0001;
     public string Description => "Args should be valid";
@@ -53,11 +53,8 @@ public partial class ArgsRules(string[] args) : IRule
             yield break;
         }
 
-        if (!GitHubRegex().IsMatch(args[0])) yield return "GitHub repo URL missing";
+        if (!Extensions.GitHubRegex().IsMatch(args[0])) yield return "GitHub repo URL missing";
     }
-
-    [GeneratedRegex(@"https:\/\/github.com\/([^\/]+)\/([^\/]+)$")]
-    private static partial Regex GitHubRegex();
 }
 
 public class RepoRules(Repository? repository) : IRule
