@@ -2,33 +2,22 @@ using Microsoft.Extensions.Logging;
 
 namespace Community.PowerToys.Run.Plugin.Lint;
 
-public class Worker(string[] args, ILogger logger)
+public class Worker(ILogger logger)
 {
     // Events
     public event EventHandler<ValidationRuleEventArgs> ValidationRule;
     public event EventHandler<ValidationMessageEventArgs> ValidationMessage;
 
-    public async Task<int> RunAsync()
+    public async Task<int> RunAsync(FileInfo? file, string url)
     {
         var errorCount = 0;
 
-        IRule[] rules =
-        [
-            new ArgsRules(args),
-        ];
-
-        if (Validate(rules))
-        {
-            return errorCount;
-        }
-
-        var url = args.FirstOrDefault();
         var options = url.GetGitHubOptions();
 
         var client = new GitHubClient(options, logger);
         var repository = await client.GetRepositoryAsync();
 
-        rules =
+        IRule[] rules =
         [
             new RepoRules(repository),
         ];

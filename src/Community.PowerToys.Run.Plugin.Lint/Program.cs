@@ -1,3 +1,5 @@
+using System.CommandLine;
+using System.CommandLine.NamingConventionBinder;
 using Community.PowerToys.Run.Plugin.Lint;
 using Microsoft.Extensions.Logging;
 using NReco.Logging.File;
@@ -11,22 +13,21 @@ return await AnsiConsole.Status()
     {
         logger.LogInformation("Linting: {Args}", args);
 
-        var worker = new Worker(args, logger);
+        var rootCommand = new RootCommand("PowerToys Run plugin linter.")
+        {
+            new Option<FileInfo?>("--file", "The file to lint. Optional, if omitted the file will be downloaded from the GitHub repo."),
+            new Argument<string>("url", "The GitHub repository that hosts the plugin."),
+        };
+
+        var worker = new Worker(logger);
 
         // Events
         worker.ValidationRule += (object? sender, ValidationRuleEventArgs e) => Log($"{e.Rule.Code.ToCode()} {e.Rule.Description}");
         worker.ValidationMessage += (object? sender, ValidationMessageEventArgs e) => Log($" {"-".ToDimmed()} {e.Message}");
 
-        try
-        {
-            return await worker.RunAsync();
-        }
-        catch (Exception ex)
-        {
-            AnsiConsole.WriteException(ex, ExceptionFormats.ShortenEverything);
-            logger.LogError(ex, "RunAsync failed.");
-            return ex.HResult;
-        }
+        rootCommand.Handler = CommandHandler.Create<FileInfo?, string>(worker.RunAsync);
+
+        return await rootCommand.InvokeAsync(args);
     });
 
 void Log(string message)
