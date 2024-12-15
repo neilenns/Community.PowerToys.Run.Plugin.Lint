@@ -1,7 +1,6 @@
 namespace Community.PowerToys.Run.Plugin.Lint.Tests
 {
     [Category("Integration")]
-    [Explicit]
     public class VerifyTests
     {
         [Test]
