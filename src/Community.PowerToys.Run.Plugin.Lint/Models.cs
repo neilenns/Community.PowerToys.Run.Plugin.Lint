@@ -20,9 +20,9 @@ public class Metadata
     public bool DynamicLoading { get; set; }
 }
 
-public sealed class Package(Asset asset, string path) : IDisposable
+public sealed class Package(Asset? asset, string path) : IDisposable
 {
-    public Asset Asset { get; } = asset;
+    public Asset? Asset { get; } = asset;
     public FileInfo FileInfo { get; } = new FileInfo(path);
     public FileStream FileStream { get; private set; }
     public ZipArchive ZipArchive { get; private set; }
@@ -67,5 +67,5 @@ public sealed class Package(Asset asset, string path) : IDisposable
         FileStream?.Dispose();
     }
 
-    public override string ToString() => Asset.name;
+    public override string ToString() => Asset?.name ?? string.Empty;
 }

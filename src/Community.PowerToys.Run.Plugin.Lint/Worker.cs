@@ -31,7 +31,7 @@ public class Worker(ILogger logger)
         var release = await client.GetLatestReleaseAsync();
 
         var handler = new ReleaseHandler(release, logger);
-        var packages = await handler.GetPackagesAsync();
+        var packages = await handler.GetPackagesAsync(file);
 
         rules =
         [
