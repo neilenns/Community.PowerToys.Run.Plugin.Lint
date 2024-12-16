@@ -15,7 +15,29 @@ return await AnsiConsole.Status()
 
         var rootCommand = new RootCommand("PowerToys Run plugin linter.")
         {
-            new Option<FileInfo?>("--file", "The file to lint. Optional, if omitted the file will be downloaded from the GitHub repo."),
+            new Option<string?>(
+                name: "--file",
+                parseArgument: result =>
+                {
+                    string? filePath = result.Tokens.Single().Value;
+
+                    if (filePath is null)
+                    {
+                        return null;
+                    }
+
+                    var fileInfo = new FileInfo(filePath);
+                    if (!File.Exists(filePath))
+                    {
+                        result.ErrorMessage = $"The file {filePath} does not exist";
+                        return null;
+                    }
+                    else
+                    {
+                        return fileInfo.FullName;
+                    }
+                },
+                description: "The file to lint. Optional, if omitted the file will be downloaded from the GitHub repo."),
             new Argument<string>("url", "The GitHub repository that hosts the plugin."),
         };
 
@@ -25,7 +47,7 @@ return await AnsiConsole.Status()
         worker.ValidationRule += (object? sender, ValidationRuleEventArgs e) => Log($"{e.Rule.Code.ToCode()} {e.Rule.Description}");
         worker.ValidationMessage += (object? sender, ValidationMessageEventArgs e) => Log($" {"-".ToDimmed()} {e.Message}");
 
-        rootCommand.Handler = CommandHandler.Create<FileInfo?, string>(worker.RunAsync);
+        rootCommand.Handler = CommandHandler.Create<string?, string>(worker.RunAsync);
 
         return await rootCommand.InvokeAsync(args);
     });

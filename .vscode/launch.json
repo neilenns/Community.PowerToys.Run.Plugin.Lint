@@ -13,7 +13,7 @@
       "program": "${workspaceFolder}/src/Community.PowerToys.Run.Plugin.Lint/bin/Debug/net8.0/Community.PowerToys.Run.Plugin.Lint.dll",
       "args": [
         "--file",
-        "test.zip",
+        "testxxx.zip",
         "https://github.com/neilenns/DiscordTimestamp"
       ],
       "cwd": "${workspaceFolder}/src/Community.PowerToys.Run.Plugin.Lint",

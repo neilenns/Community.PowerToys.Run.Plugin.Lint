@@ -8,7 +8,7 @@ public class Worker(ILogger logger)
     public event EventHandler<ValidationRuleEventArgs> ValidationRule;
     public event EventHandler<ValidationMessageEventArgs> ValidationMessage;
 
-    public async Task<int> RunAsync(FileInfo? file, string url)
+    public async Task<int> RunAsync(string? file, string url)
     {
         var errorCount = 0;
 
