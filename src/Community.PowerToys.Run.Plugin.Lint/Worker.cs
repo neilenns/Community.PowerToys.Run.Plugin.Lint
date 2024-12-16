@@ -8,11 +8,17 @@ public class Worker(ILogger logger)
     public event EventHandler<ValidationRuleEventArgs> ValidationRule;
     public event EventHandler<ValidationMessageEventArgs> ValidationMessage;
 
-    public async Task<int> RunAsync(string? file, string url)
+    public async Task<int> RunAsync(Arguments args)
     {
+        if (args is null)
+        {
+            return 1;
+        }
+
         var errorCount = 0;
 
-        var options = url.GetGitHubOptions();
+        var options = args.GitHubUrl.GetGitHubOptions();
+        options.PersonalAccessToken = args.PersonalAccessToken;
 
         var client = new GitHubClient(options, logger);
         var repository = await client.GetRepositoryAsync();
@@ -27,11 +33,11 @@ public class Worker(ILogger logger)
             return errorCount;
         }
 
-        var readme = await client.GetReadmeAsync();
+        var readme = await client.GetReadmeAsync(args.ReadmeFile);
         var release = await client.GetLatestReleaseAsync();
 
         var handler = new ReleaseHandler(release, logger);
-        var packages = await handler.GetPackagesAsync(file);
+        var packages = await handler.GetPackagesAsync(args.ZipFile);
 
         rules =
         [

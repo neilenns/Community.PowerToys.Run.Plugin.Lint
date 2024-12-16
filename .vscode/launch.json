@@ -12,8 +12,10 @@
       // If you have changed target frameworks, make sure to update the program path.
       "program": "${workspaceFolder}/src/Community.PowerToys.Run.Plugin.Lint/bin/Debug/net8.0/Community.PowerToys.Run.Plugin.Lint.dll",
       "args": [
-        "--file",
-        "test.zip",
+        "--zipFile",
+        "DiscordTimestamp-1.1.1-x64.zip",
+        "--readmeFile",
+        "${workspaceFolder}/README.md",
         "https://github.com/neilenns/DiscordTimestamp"
       ],
       "cwd": "${workspaceFolder}/src/Community.PowerToys.Run.Plugin.Lint",

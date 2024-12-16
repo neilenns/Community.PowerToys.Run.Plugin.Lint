@@ -7,7 +7,7 @@ public interface IGitHubClient
 {
     Task<User?> GetUserAsync();
     Task<Repository?> GetRepositoryAsync();
-    Task<Readme?> GetReadmeAsync();
+    Task<Readme?> GetReadmeAsync(string readmeFile);
     Task<Release?> GetLatestReleaseAsync();
 }
 
@@ -65,10 +65,25 @@ public class GitHubClient : IGitHubClient
         }
     }
 
-    public async Task<Readme?> GetReadmeAsync()
+    public async Task<Readme?> GetReadmeAsync(string? readmeFile = null)
     {
         try
         {
+            // Load the local file if one was specified
+            if (readmeFile is not null)
+            {
+                using (var reader = new StreamReader(readmeFile))
+                {
+                    return new Readme()
+                    {
+                        // Only populate the content property since that's all that's required upstream.
+                        // This explicitly doesn't set an encoding either, which ensures it doesn't get
+                        // base64 decoded like the GitHub response version would.
+                        content = await reader.ReadToEndAsync(),
+                    };
+                }
+            }
+
             // https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#get-a-repository-readme
             return await HttpClient.GetFromJsonAsync<Readme>($"/repos/{Options.Owner}/{Options.Repo}/readme");
         }
@@ -96,7 +111,7 @@ public class GitHubClient : IGitHubClient
 
 public class GitHubOptions
 {
-    public string PersonalAccessToken { get; set; }
+    public string? PersonalAccessToken { get; set; }
     public string Owner { get; set; }
     public string Repo { get; set; }
 }
