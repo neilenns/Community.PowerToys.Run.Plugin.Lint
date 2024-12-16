@@ -148,6 +148,13 @@ public class ReleaseNotesRules(Release release, Package package) : IRule
 
     public IEnumerable<string> Validate()
     {
+        // This means it was a local file, not downloaded from GitHub, and these
+        // rules should be skipped.
+        if (package.Asset is null)
+        {
+            yield break;
+        }
+
         if (release?.body == null)
         {
             yield return "Release notes missing";
