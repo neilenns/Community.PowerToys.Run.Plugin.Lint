@@ -234,7 +234,7 @@ public class PackageChecksumRules(Release release, Package package, Checksum[] c
 
         var hash = Hash();
         var validReleaseNotes = release.body.Contains(hash, StringComparison.OrdinalIgnoreCase);
-        var validChecksumsFile = checksums?.Any(x => x.Hash == hash && x.Name.Contains(package.Asset.name, StringComparison.OrdinalIgnoreCase)) == true;
+        var validChecksumsFile = checksums?.Any(x => x.Hash.Equals(hash, StringComparison.OrdinalIgnoreCase) && x.Name.Contains(package.Asset.name, StringComparison.OrdinalIgnoreCase)) == true;
 
         if (!validReleaseNotes && !validChecksumsFile) yield return $"Hash {hash.ToQuote()} missing";
 

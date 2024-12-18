@@ -232,7 +232,18 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
             subject = new PackageChecksumRules(release, package, []);
             subject.Validate().Clean().Should().BeEmpty();
 
+            release = new Release
+            {
+                body = "c2d1c03203b769563c62fd17517333849e630b721f4565bcd05d0b8720f6c6bd",
+            };
+            subject = new PackageChecksumRules(release, package, []);
+            subject.Validate().Clean().Should().BeEmpty();
+
             var checksum = new Checksum("C2D1C03203B769563C62FD17517333849E630B721F4565BCD05D0B8720F6C6BD", "Valid-0.87.0-x64.zip");
+            subject = new PackageChecksumRules(new() { body = "" }, package, [checksum]);
+            subject.Validate().Clean().Should().BeEmpty();
+
+            checksum = new Checksum("c2d1c03203b769563c62fd17517333849e630b721f4565bcd05d0b8720f6c6bd", "Valid-0.87.0-x64.zip");
             subject = new PackageChecksumRules(new() { body = "" }, package, [checksum]);
             subject.Validate().Clean().Should().BeEmpty();
         }
