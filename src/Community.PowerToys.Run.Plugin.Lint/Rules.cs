@@ -159,16 +159,6 @@ public class ReleaseNotesRules(Release release, Package package) : IRule
             yield return "Package missing";
             yield break;
         }
-
-        var hash = Hash();
-        if (!release.body.Contains(hash, StringComparison.OrdinalIgnoreCase)) yield return $"Hash {hash.ToQuote()} missing";
-
-        string Hash()
-        {
-            using var algorithm = SHA256.Create();
-            package.FileStream.Position = 0; // rewind
-            return BitConverter.ToString(algorithm.ComputeHash(package.FileStream)).Replace("-", string.Empty, StringComparison.Ordinal);
-        }
     }
 }
 
@@ -214,6 +204,46 @@ public class PackageContentRules(Package package) : IRule
 
         string[] RootFolders() => [.. package.ZipArchive.Entries.Select(x => x.FullName.Split('\\', '/')[0]).Distinct()];
         string[] Files() => [.. package.ZipArchive.Entries.Select(x => x.Name)];
+    }
+}
+
+public class PackageChecksumRules(Release release, Package package, Checksum[] checksums) : IRule
+{
+    public int Id => 1303;
+    public string Description => $"Package checksum should be valid {package.ToString().ToFilename()}";
+
+    public IEnumerable<string> Validate()
+    {
+        if (release?.body == null)
+        {
+            yield return "Release notes missing";
+            yield break;
+        }
+
+        if (package?.FileStream == null)
+        {
+            yield return "Package missing";
+            yield break;
+        }
+
+        if (package?.Asset?.name == null)
+        {
+            yield return "Package missing";
+            yield break;
+        }
+
+        var hash = Hash();
+        var validReleaseNotes = release.body.Contains(hash, StringComparison.OrdinalIgnoreCase);
+        var validChecksumsFile = checksums?.Any(x => x.Hash == hash && x.Name.Contains(package.Asset.name, StringComparison.OrdinalIgnoreCase)) == true;
+
+        if (!validReleaseNotes && !validChecksumsFile) yield return $"Hash {hash.ToQuote()} missing";
+
+        string Hash()
+        {
+            using var algorithm = SHA256.Create();
+            package.FileStream.Position = 0; // rewind
+            return BitConverter.ToString(algorithm.ComputeHash(package.FileStream)).Replace("-", string.Empty, StringComparison.Ordinal);
+        }
     }
 }
 

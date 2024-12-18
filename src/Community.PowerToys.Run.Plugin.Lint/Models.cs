@@ -69,3 +69,9 @@ public sealed class Package(Asset asset, string path) : IDisposable
 
     public override string ToString() => Asset.name;
 }
+
+public class Checksum(string hash, string name)
+{
+    public string Hash { get; } = hash;
+    public string Name { get; } = name;
+}

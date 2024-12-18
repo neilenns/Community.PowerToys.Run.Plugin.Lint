@@ -138,14 +138,6 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
 
             package.Load();
             subject = new ReleaseNotesRules(release, package);
-            subject.Validate().Clean().Should().BeEquivalentTo(
-                "Hash \"17AE81ECE0F201AE364047B63BDB052931614EDD49D860E562B277E6D3FA806A\" missing");
-
-            release = new Release
-            {
-                body = "17AE81ECE0F201AE364047B63BDB052931614EDD49D860E562B277E6D3FA806A",
-            };
-            subject = new ReleaseNotesRules(release, package);
             subject.Validate().Clean().Should().BeEmpty();
         }
 
@@ -205,6 +197,43 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
             package = new Package(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip");
             package.Load();
             subject = new PackageContentRules(package);
+            subject.Validate().Clean().Should().BeEmpty();
+        }
+
+        [Test]
+        public void PackageChecksumRules_should_validate_Package()
+        {
+            var subject = new PackageChecksumRules(null!, new(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip"), []);
+            subject.Validate().Clean().Should().BeEquivalentTo(
+                "Release notes missing");
+
+            subject = new PackageChecksumRules(new(), new(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip"), []);
+            subject.Validate().Clean().Should().BeEquivalentTo(
+                "Release notes missing");
+
+            subject = new PackageChecksumRules(new() { body = "" }, new(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip"), []);
+            subject.Validate().Clean().Should().BeEquivalentTo(
+                "Package missing");
+
+            var package = new Package(new() { name = "Valid-0.82.1-x64.zip" }, @"..\..\..\Packages\Valid-0.82.1-x64.zip");
+            package.Load();
+            subject = new PackageChecksumRules(new() { body = "" }, package, []);
+            subject.Validate().Clean().Should().BeEquivalentTo(
+                "Hash \"17AE81ECE0F201AE364047B63BDB052931614EDD49D860E562B277E6D3FA806A\" missing");
+
+            subject = new PackageChecksumRules(new() { body = "" }, package, null!);
+            subject.Validate().Clean().Should().BeEquivalentTo(
+                "Hash \"17AE81ECE0F201AE364047B63BDB052931614EDD49D860E562B277E6D3FA806A\" missing");
+
+            var release = new Release
+            {
+                body = "17AE81ECE0F201AE364047B63BDB052931614EDD49D860E562B277E6D3FA806A",
+            };
+            subject = new PackageChecksumRules(release, package, []);
+            subject.Validate().Clean().Should().BeEmpty();
+
+            var checksum = new Checksum("17AE81ECE0F201AE364047B63BDB052931614EDD49D860E562B277E6D3FA806A", "Valid-0.82.1-x64.zip");
+            subject = new PackageChecksumRules(new() { body = "" }, package, [checksum]);
             subject.Validate().Clean().Should().BeEmpty();
         }
 

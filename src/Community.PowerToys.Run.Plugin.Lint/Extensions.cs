@@ -41,6 +41,11 @@ public static partial class Extensions
             (asset?.name != null && asset.name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase));
     }
 
+    public static bool IsChecksumsFile(this Asset asset)
+    {
+        return asset?.name != null && asset.name == "checksums.txt";
+    }
+
     public static bool HasValidTargetFramework(this Package package)
     {
         return package.AssemblyAttributeValue(typeof(TargetFrameworkAttribute)) == ".NETCoreApp,Version=v8.0";

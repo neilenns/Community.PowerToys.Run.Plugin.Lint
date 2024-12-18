@@ -47,6 +47,16 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
         }
 
         [Test]
+        public void IsChecksumsFile_should_determine_if_Asset_is_checksums_file()
+        {
+            new Asset { name = "checksums.txt" }.IsChecksumsFile().Should().BeTrue();
+            new Asset { name = "checksums.zip" }.IsChecksumsFile().Should().BeFalse();
+            new Asset { name = "" }.IsChecksumsFile().Should().BeFalse();
+            new Asset().IsChecksumsFile().Should().BeFalse();
+            ((Asset)null!).IsChecksumsFile().Should().BeFalse();
+        }
+
+        [Test]
         public void HasValidTargetFramework_should_validate_Assembly()
         {
             new Package(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip").Load()
