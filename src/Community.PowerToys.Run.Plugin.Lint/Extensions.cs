@@ -58,7 +58,7 @@ public static partial class Extensions
 
     public static bool HasValidAuthor(this Metadata metadata, User user)
     {
-        return string.IsNullOrEmpty(metadata?.Author) ? false : metadata.Author == user?.login || metadata?.Author == user?.name;
+        return !string.IsNullOrEmpty(metadata?.Author) && (metadata.Author == user?.login || metadata?.Author == user?.name);
     }
 
     private static string? AssemblyAttributeValue(this Package package, Type type)
