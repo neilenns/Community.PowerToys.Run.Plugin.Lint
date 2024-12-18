@@ -139,7 +139,7 @@ Example:
 | `Install-0.1.0-arm64.zip` | `CB03EF645F24248F9618AF18E82D7BA7127F209AB1BE77701FC6183FDC952037`
 | `Install-0.1.0-x64.zip` | `E0DB7B8A98D0891B97AAF85A68D340EDDCDF09389537BA64401CF8D786746EC5`
 
-Create a checksums file:
+Create a checksums file and attach it to the release as an asset:
 
 - Filename: `checksums.txt`
 - Method: `SHA256`
