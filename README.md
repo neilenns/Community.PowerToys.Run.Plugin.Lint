@@ -151,6 +151,7 @@ CB03EF645F24248F9618AF18E82D7BA7127F209AB1BE77701FC6183FDC952037 Install-0.1.0-a
 E0DB7B8A98D0891B97AAF85A68D340EDDCDF09389537BA64401CF8D786746EC5 Install-0.1.0-x64.zip
 ```
 
+A `checksum.txt` can be generated automatically in a GitHub workflow using the [wangzuo/action-release-checksums action](https://github.com/wangzuo/action-release-checksums).
 ## Disclaimer
 
 This is not an official Microsoft PowerToys tool.
