@@ -98,7 +98,7 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
             subject.Validate().Clean().Should().BeEquivalentTo(
                 "Asset \".zip\" missing");
 
-            subject = new ReleaseRules(new() { assets = [new() { name = "Valid-0.82.1.zip", content_type = "application/zip" }] });
+            subject = new ReleaseRules(new() { assets = [new() { name = "Valid-0.87.0.zip", content_type = "application/zip" }] });
             subject.Validate().Clean().Should().BeEquivalentTo(
                 "Asset \"arm64\" platform missing",
                 "Asset \"x64\" platform missing");
@@ -107,8 +107,8 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
             {
                 assets =
                 [
-                    new() { name = "Valid-0.82.1-arm64.zip", content_type = "application/zip" },
-                    new() { name = "Valid-0.82.1-x64.zip", content_type = "application/zip" },
+                    new() { name = "Valid-0.87.0-arm64.zip", content_type = "application/zip" },
+                    new() { name = "Valid-0.87.0-x64.zip", content_type = "application/zip" },
                 ],
             };
             subject = new ReleaseRules(release);
@@ -131,7 +131,7 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
             subject.Validate().Clean().Should().BeEquivalentTo(
                 "Package missing");
 
-            var package = new Package(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip");
+            var package = new Package(new(), @"..\..\..\Packages\Valid-0.87.0-x64.zip");
             subject = new ReleaseNotesRules(release, package);
             subject.Validate().Clean().Should().BeEquivalentTo(
                 "Package missing");
@@ -152,7 +152,7 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
             subject.Validate().Clean().Should().BeEquivalentTo(
                 "Filename does not match \"<name>-<version>-<platform>.zip\" convention");
 
-            subject = new PackageRules(new(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip"));
+            subject = new PackageRules(new(new(), @"..\..\..\Packages\Valid-0.87.0-x64.zip"));
             subject.Validate().Clean().Should().BeEmpty();
 
             subject = new PackageRules(new(new(), @"..\..\..\Packages\Valid.Name-0.82.1-X64.zip"));
@@ -166,7 +166,7 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
             subject.Validate().Clean().Should().BeEquivalentTo(
                 "Package missing");
 
-            subject = new PackageContentRules(new(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip"));
+            subject = new PackageContentRules(new(new(), @"..\..\..\Packages\Valid-0.87.0-x64.zip"));
             subject.Validate().Clean().Should().BeEquivalentTo(
                 "Package missing");
 
@@ -194,7 +194,7 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
             subject.Validate().Clean().Should().BeEquivalentTo(
                 "Assembly \".dll\" missing");
 
-            package = new Package(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip");
+            package = new Package(new(), @"..\..\..\Packages\Valid-0.87.0-x64.zip");
             package.Load();
             subject = new PackageContentRules(package);
             subject.Validate().Clean().Should().BeEmpty();
@@ -203,36 +203,36 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
         [Test]
         public void PackageChecksumRules_should_validate_Package()
         {
-            var subject = new PackageChecksumRules(null!, new(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip"), []);
+            var subject = new PackageChecksumRules(null!, new(new(), @"..\..\..\Packages\Valid-0.87.0-x64.zip"), []);
             subject.Validate().Clean().Should().BeEquivalentTo(
                 "Release notes missing");
 
-            subject = new PackageChecksumRules(new(), new(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip"), []);
+            subject = new PackageChecksumRules(new(), new(new(), @"..\..\..\Packages\Valid-0.87.0-x64.zip"), []);
             subject.Validate().Clean().Should().BeEquivalentTo(
                 "Release notes missing");
 
-            subject = new PackageChecksumRules(new() { body = "" }, new(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip"), []);
+            subject = new PackageChecksumRules(new() { body = "" }, new(new(), @"..\..\..\Packages\Valid-0.87.0-x64.zip"), []);
             subject.Validate().Clean().Should().BeEquivalentTo(
                 "Package missing");
 
-            var package = new Package(new() { name = "Valid-0.82.1-x64.zip" }, @"..\..\..\Packages\Valid-0.82.1-x64.zip");
+            var package = new Package(new() { name = "Valid-0.87.0-x64.zip" }, @"..\..\..\Packages\Valid-0.87.0-x64.zip");
             package.Load();
             subject = new PackageChecksumRules(new() { body = "" }, package, []);
             subject.Validate().Clean().Should().BeEquivalentTo(
-                "Hash \"17AE81ECE0F201AE364047B63BDB052931614EDD49D860E562B277E6D3FA806A\" missing");
+                "Hash \"C2D1C03203B769563C62FD17517333849E630B721F4565BCD05D0B8720F6C6BD\" missing");
 
             subject = new PackageChecksumRules(new() { body = "" }, package, null!);
             subject.Validate().Clean().Should().BeEquivalentTo(
-                "Hash \"17AE81ECE0F201AE364047B63BDB052931614EDD49D860E562B277E6D3FA806A\" missing");
+                "Hash \"C2D1C03203B769563C62FD17517333849E630B721F4565BCD05D0B8720F6C6BD\" missing");
 
             var release = new Release
             {
-                body = "17AE81ECE0F201AE364047B63BDB052931614EDD49D860E562B277E6D3FA806A",
+                body = "C2D1C03203B769563C62FD17517333849E630B721F4565BCD05D0B8720F6C6BD",
             };
             subject = new PackageChecksumRules(release, package, []);
             subject.Validate().Clean().Should().BeEmpty();
 
-            var checksum = new Checksum("17AE81ECE0F201AE364047B63BDB052931614EDD49D860E562B277E6D3FA806A", "Valid-0.82.1-x64.zip");
+            var checksum = new Checksum("C2D1C03203B769563C62FD17517333849E630B721F4565BCD05D0B8720F6C6BD", "Valid-0.87.0-x64.zip");
             subject = new PackageChecksumRules(new() { body = "" }, package, [checksum]);
             subject.Validate().Clean().Should().BeEmpty();
         }
@@ -244,7 +244,7 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
             subject.Validate().Clean().Should().BeEquivalentTo(
                 "Package missing");
 
-            var package = new Package(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip");
+            var package = new Package(new(), @"..\..\..\Packages\Valid-0.87.0-x64.zip");
             package.Load();
             subject = new PluginMetadataRules(package, null!, new());
             subject.Validate().Clean().Should().BeEquivalentTo(
@@ -256,7 +256,7 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
             subject.Validate().Clean().Should().BeEquivalentTo(
                 "Package missing");
 
-            package = new Package(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip");
+            package = new Package(new(), @"..\..\..\Packages\Valid-0.87.0-x64.zip");
             package.Load();
             SetMetadata(package, new Metadata
             {
@@ -290,7 +290,7 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
                 "IcoPathLight missing in package",
                 "DynamicLoading is unnecessary");
 
-            package = new Package(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip");
+            package = new Package(new(), @"..\..\..\Packages\Valid-0.87.0-x64.zip");
             package.Load();
             var user = new User { login = "hlaueriksson" };
             subject = new PluginMetadataRules(package, repository, user);
@@ -327,7 +327,7 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
                 "Unnecessary dependency: Newtonsoft.Json, consider using System.Text.Json",
                 "Unnecessary dependency: LazyCache, already defined in Central Package Management (Directory.Packages.props)");
 
-            package = new Package(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip");
+            package = new Package(new(), @"..\..\..\Packages\Valid-0.87.0-x64.zip");
             package.Load();
             subject = new PluginDependenciesRules(package);
             subject.Validate().Clean().Should().BeEmpty();
@@ -344,11 +344,11 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
             package.Load();
             subject = new AssemblyRules(package);
             subject.Validate().Clean().Should().BeEquivalentTo(
-                "Target framework should be \"net8.0\"",
+                "Target framework should be \"net9.0\"",
                 "Target platform should be \"windows\"",
                 "Main.PluginID does not match metadata (plugin.json) ID");
 
-            package = new Package(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip");
+            package = new Package(new(), @"..\..\..\Packages\Valid-0.87.0-x64.zip");
             package.Load();
             subject = new AssemblyRules(package);
             subject.Validate().Clean().Should().BeEmpty();

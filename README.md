@@ -113,7 +113,7 @@ Logs are written to a file, `ptrun-lint.log`, in the same directory as the tool 
 | | Unnecessary dependency: `<dependency>`, already defined in Central Package Management (`Directory.Packages.props`) |
 | `PTRUN1501` | Plugin assembly should be valid (`<package>`) |
 | | Assembly could not be validated |
-| | Target framework should be "`net8.0`" |
+| | Target framework should be "`net9.0`" |
 | | Target platform should be "`windows`" |
 | | Main.PluginID does not match metadata (`plugin.json`) ID |
 
