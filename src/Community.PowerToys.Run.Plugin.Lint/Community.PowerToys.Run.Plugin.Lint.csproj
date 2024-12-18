@@ -5,14 +5,11 @@
     <TargetFramework>net9.0</TargetFramework>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>ptrun-lint</ToolCommandName>
-    <Version>0.2.0</Version>
+    <Version>0.3.0</Version>
     <PackageReleaseNotes>
-Fix:
-- IcoPathDark missing in package
-- IcoPathLight missing in package
-
-Lax:
-- Filename does not match "&lt;name&gt;-&lt;version&gt;-&lt;platform&gt;.zip" convention
+- Bump target framework to net9.0
+- Support for GitHub name as author
+- Support for checksums file
     </PackageReleaseNotes>
     <Authors>Henrik Lau Eriksson</Authors>
     <Description>Linter for PowerToys Run community plugins</Description>
