@@ -355,7 +355,7 @@ public class AssemblyRules(Package package) : IRule
             yield break;
         }
 
-        if (!package.HasValidTargetFramework()) yield return $"Target framework should be {"net8.0".ToQuote()}";
+        if (!package.HasValidTargetFramework()) yield return $"Target framework should be {"net9.0".ToQuote()}";
         if (!package.HasValidTargetPlatform()) yield return $"Target platform should be {"windows".ToQuote()}";
 
         var pluginId = PluginID(MainTypeDefinition());

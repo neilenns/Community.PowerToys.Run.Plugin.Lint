@@ -7,7 +7,7 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
         [Test]
         public void Package_ctor()
         {
-            var subject = new Package(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip");
+            var subject = new Package(new(), @"..\..\..\Packages\Valid-0.87.0-x64.zip");
             subject.Asset.Should().NotBeNull();
             subject.FileInfo.Should().NotBeNull();
         }
@@ -15,7 +15,7 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
         [Test]
         public void Package_Load()
         {
-            var subject = new Package(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip");
+            var subject = new Package(new(), @"..\..\..\Packages\Valid-0.87.0-x64.zip");
             subject.Load();
             subject.FileStream.Should().NotBeNull();
             subject.ZipArchive.Should().NotBeNull();
@@ -30,7 +30,7 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
         [Test]
         public void Package_Dispose()
         {
-            var subject = new Package(new(), @"..\..\..\Packages\Valid-0.82.1-x64.zip");
+            var subject = new Package(new(), @"..\..\..\Packages\Valid-0.87.0-x64.zip");
             subject.Load();
             subject.Dispose();
         }

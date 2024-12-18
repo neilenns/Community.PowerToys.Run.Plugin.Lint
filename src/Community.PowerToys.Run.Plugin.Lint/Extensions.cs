@@ -48,7 +48,7 @@ public static partial class Extensions
 
     public static bool HasValidTargetFramework(this Package package)
     {
-        return package.AssemblyAttributeValue(typeof(TargetFrameworkAttribute)) == ".NETCoreApp,Version=v8.0";
+        return package.AssemblyAttributeValue(typeof(TargetFrameworkAttribute)) == ".NETCoreApp,Version=v9.0";
     }
 
     public static bool HasValidTargetPlatform(this Package package)
