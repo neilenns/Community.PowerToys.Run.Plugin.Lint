@@ -242,7 +242,7 @@ public class PackageChecksumRules(Release release, Package package, Checksum[] c
         {
             using var algorithm = SHA256.Create();
             package.FileStream.Position = 0; // rewind
-            return BitConverter.ToString(algorithm.ComputeHash(package.FileStream)).Replace("-", string.Empty, StringComparison.Ordinal);
+            return Convert.ToHexString(algorithm.ComputeHash(package.FileStream));
         }
     }
 }

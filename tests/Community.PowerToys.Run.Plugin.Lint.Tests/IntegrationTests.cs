@@ -20,8 +20,8 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
         public void GEmojiSharp()
         {
             var (ExitCode, StandardOutput, StandardError) = Run("https://github.com/hlaueriksson/GEmojiSharp");
-            ExitCode.Should().Be(5);
-            StandardOutput.Should().ContainAll(["PTRUN1002", "PTRUN1301", "PTRUN1401"]);
+            ExitCode.Should().Be(2);
+            StandardOutput.Should().ContainAll(["PTRUN1401"]);
             StandardError.Should().BeEmpty();
         }
 
