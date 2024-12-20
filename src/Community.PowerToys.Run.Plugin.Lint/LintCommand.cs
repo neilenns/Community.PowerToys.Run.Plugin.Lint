@@ -6,7 +6,6 @@ using Spectre.Console.Cli;
 
 namespace Community.PowerToys.Run.Plugin.Lint;
 
-#pragma warning disable CA1812
 public sealed class LintCommand : AsyncCommand<LintSettings>
 {
     private readonly ILogger<LintCommand> logger;

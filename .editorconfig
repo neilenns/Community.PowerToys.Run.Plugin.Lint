@@ -195,3 +195,6 @@ dotnet_diagnostic.SA1601.severity = none
 dotnet_diagnostic.SA1633.severity = none
 dotnet_diagnostic.SA1649.severity = none
 dotnet_diagnostic.CS8618.severity = none
+
+# IDE1006: Naming Styles, competes with SA1309
+dotnet_diagnostic.IDE1006.severity = none

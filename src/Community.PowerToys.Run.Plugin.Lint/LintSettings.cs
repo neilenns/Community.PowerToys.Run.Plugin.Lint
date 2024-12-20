@@ -24,19 +24,19 @@ public sealed class LintSettings : CommandSettings
 
     public override ValidationResult Validate()
     {
-        // If --zipFile or --readme are specified then both must be specified
+        // If --zipFile or --readme are specified then both must be specified.
         if ((ZipFile is null) != (ReadmeFile is null))
         {
             return ValidationResult.Error("If --zipFile or --readme is specified then both must be specified.");
         }
 
-        // If --zipFile is specified then the file must exist on disk
+        // If --zipFile is specified then the file must exist on disk.
         if (ZipFile is not null && !File.Exists(ZipFile))
         {
             return ValidationResult.Error($"The file '{ZipFile}' does not exist.");
         }
 
-        // If --readmeFile is specified then the file must exist on disk
+        // If --readmeFile is specified then the file must exist on disk.
         if (ReadmeFile is not null && !File.Exists(ReadmeFile))
         {
             return ValidationResult.Error($"The file '{ReadmeFile}' does not exist.");
