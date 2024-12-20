@@ -7,25 +7,6 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
     public class RulesTests
     {
         [Test]
-        public void ArgsRules_should_validate_Repository()
-        {
-            var subject = new ArgsRules(null!);
-            subject.Validate().Clean().Should().BeEquivalentTo(
-                "Args missing");
-
-            subject = new ArgsRules([]);
-            subject.Validate().Clean().Should().BeEquivalentTo(
-                "Args missing");
-
-            subject = new ArgsRules(["invalid"]);
-            subject.Validate().Clean().Should().BeEquivalentTo(
-                "GitHub repo URL missing");
-
-            subject = new ArgsRules(["https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Update"]);
-            subject.Validate().Clean().Should().BeEmpty();
-        }
-
-        [Test]
         public void RepoRules_should_validate_Repository()
         {
             var subject = new RepoRules(null!);

@@ -52,11 +52,6 @@ Logs are written to a file, `ptrun-lint.log`, in the same directory as the tool 
 
 | Code | Description |
 | --- | --- |
-| `PTRUN0001` | Args should be valid |
-| | Args missing |
-| | GitHub repo URL missing |
-| `PTRUN1001` | Repo should be valid |
-| | Repository missing |
 | `PTRUN1002` | Repo details should be valid |
 | | Repository missing |
 | | Topic "`powertoys-run-plugin`" missing |

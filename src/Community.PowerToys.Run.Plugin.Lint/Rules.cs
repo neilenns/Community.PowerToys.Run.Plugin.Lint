@@ -40,23 +40,6 @@ public static class RuleStyle
     public static string ToDimmed(this string value) => $"[{Dimmed.ToMarkup()}]{value}[/]";
 }
 
-public class ArgsRules(string[] args) : IRule
-{
-    public int Id => 0001;
-    public string Description => "Args should be valid";
-
-    public IEnumerable<string> Validate()
-    {
-        if (args == null || args.Length == 0)
-        {
-            yield return "Args missing";
-            yield break;
-        }
-
-        if (!Extensions.GitHubRegex().IsMatch(args[0])) yield return "GitHub repo URL missing";
-    }
-}
-
 public class RepoRules(Repository? repository) : IRule
 {
     public int Id => 1001;
