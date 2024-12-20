@@ -1,30 +1,44 @@
-using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.Logging;
+using NReco.Logging.File;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
 namespace Community.PowerToys.Run.Plugin.Lint;
 
-internal sealed class LintCommand : AsyncCommand<LintCommand.Settings>
+#pragma warning disable CA1812
+public sealed class LintCommand : AsyncCommand<LintSettings>
 {
-    public override Task<int> ExecuteAsync([NotNull] CommandContext context, [NotNull] Settings settings)
+    private readonly ILogger<LintCommand> logger;
+
+    public LintCommand()
     {
-        AnsiConsole.WriteLine("Linting plugin...");
-        return Task.FromResult(0);
+        using var factory = LoggerFactory.Create(builder => builder.AddFile("ptrun-lint.log", append: true));
+        logger = factory.CreateLogger<LintCommand>();
     }
 
-    public sealed class Settings : CommandSettings
+    public override async Task<int> ExecuteAsync([NotNull] CommandContext context, [NotNull] LintSettings settings)
     {
-        [Description("Path to the plugin zip file. Optional, if not provided the plugin is downloaded from the GitHubUrl release page.")]
-        [CommandOption("--zipFile")]
-        public string ZipFile { get; set; }
+        var worker = new Worker(settings, logger);
 
-        [Description("GitHub personal access token to use when reading information from GitHub. Optional.")]
-        [CommandOption("--gitHubPat")]
-        public string GitHubPat { get; set; }
+        worker.ValidationRule += (object? sender, ValidationRuleEventArgs e) => Log($"{e.Rule.Code.ToCode()} {e.Rule.Description}");
+        worker.ValidationMessage += (object? sender, ValidationMessageEventArgs e) => Log($" {"-".ToDimmed()} {e.Message}");
 
-        [Description("URL to the GitHub respository that hosts the plugin.")]
-        [CommandArgument(0, "gitHubUrl")]
-        public string GitHubUrl { get; set; }
+        try
+        {
+            return await worker.RunAsync();
+        }
+        catch (Exception ex)
+        {
+            AnsiConsole.WriteException(ex, ExceptionFormats.ShortenEverything);
+            logger.LogError(ex, "RunAsync failed.");
+            return ex.HResult;
+        }
+    }
+
+    private void Log(string message)
+    {
+        AnsiConsole.MarkupLine(message);
+        logger.LogInformation(Markup.Remove(message));
     }
 }
