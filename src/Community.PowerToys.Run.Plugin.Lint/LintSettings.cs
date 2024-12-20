@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Spectre.Console;
 using Spectre.Console.Cli;
 
 namespace Community.PowerToys.Run.Plugin.Lint;
@@ -10,8 +11,8 @@ public sealed class LintSettings : CommandSettings
     public string ZipFile { get; set; }
 
     [Description("Path to the readme file. Optional, if not provided the readme is downloaded from the GitHubUrl release page.")]
-    [CommandOption("--readme")]
-    public string Readme { get; set; }
+    [CommandOption("--readmeFile")]
+    public string ReadmeFile { get; set; }
 
     [Description("GitHub personal access token to use when reading information from GitHub. Optional.")]
     [CommandOption("--gitHubPat")]
@@ -20,4 +21,15 @@ public sealed class LintSettings : CommandSettings
     [Description("URL to the GitHub respository that hosts the plugin.")]
     [CommandArgument(0, "<gitHubUrl>")]
     public string GitHubUrl { get; set; }
+
+    public override ValidationResult Validate()
+    {
+        // If --zipFile or --readme are specified then both must be specified
+        if ((ZipFile is null) != (ReadmeFile is null))
+        {
+            return ValidationResult.Error("If --zipFile or --readme is specified then both must be specified.");
+        }
+
+        return ValidationResult.Success();
+    }
 }

@@ -26,7 +26,7 @@ public sealed class LintCommand : AsyncCommand<LintSettings>
 
         try
         {
-            return await worker.RunAsync();
+            return await AnsiConsole.Status().StartAsync("Linting", async _ => await worker.RunAsync());
         }
         catch (Exception ex)
         {
