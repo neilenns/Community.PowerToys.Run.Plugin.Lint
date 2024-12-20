@@ -103,7 +103,7 @@ public class ReadmeRules(Readme? readme) : IRule
             yield break;
         }
 
-        var content = Decode(readme.content);
+        var content = readme.encoding == "base64" ? Decode(readme.content) : readme.content;
         if (!content.Contains("installation", StringComparison.InvariantCultureIgnoreCase)) yield return "Installation instructions missing";
         if (!content.Contains("usage", StringComparison.InvariantCultureIgnoreCase)) yield return "Usage instructions missing";
 

@@ -29,7 +29,7 @@ public class Worker(LintSettings settings, ILogger logger)
             return errorCount;
         }
 
-        var readme = await client.GetReadmeAsync();
+        var readme = await client.GetReadmeAsync(settings.ReadmeFile);
         var release = await client.GetLatestReleaseAsync();
 
         rules =
@@ -42,7 +42,7 @@ public class Worker(LintSettings settings, ILogger logger)
         Validate(rules);
 
         var handler = new ReleaseHandler(release, logger);
-        var packages = await handler.GetPackagesAsync();
+        var packages = await handler.GetPackagesAsync(settings.ZipFile);
         var checksums = await handler.GetChecksumsAsync();
         var user = await client.GetUserAsync();
 

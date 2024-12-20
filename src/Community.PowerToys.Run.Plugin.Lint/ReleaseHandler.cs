@@ -4,13 +4,13 @@ namespace Community.PowerToys.Run.Plugin.Lint;
 
 public interface IReleaseHandler
 {
-    Task<Package[]> GetPackagesAsync();
+    Task<Package[]> GetPackagesAsync(string? zipPath);
     Task<Checksum[]> GetChecksumsAsync();
 }
 
 public sealed class ReleaseHandler(Release? release, ILogger logger) : IReleaseHandler, IDisposable
 {
-    public async Task<Package[]> GetPackagesAsync()
+    public async Task<Package[]> GetPackagesAsync(string? zipPath = null)
     {
         if (release == null)
         {
@@ -18,6 +18,13 @@ public sealed class ReleaseHandler(Release? release, ILogger logger) : IReleaseH
         }
 
         var result = new List<Package>();
+
+        if (zipPath != null)
+        {
+            result.Add(new Package(null, zipPath));
+            return [.. result];
+        }
+
         using var client = new HttpClient();
         foreach (var asset in release.assets)
         {
