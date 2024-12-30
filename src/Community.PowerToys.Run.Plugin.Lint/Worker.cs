@@ -26,6 +26,10 @@ public class Worker(string[] args, ILogger logger)
         {
             return await ValidateRepositoryAsync(args);
         }
+        else if (args[0].IsPath())
+        {
+            return await ValidatePackageAsync(args);
+        }
 
         return ErrorCount;
     }
@@ -84,6 +88,35 @@ public class Worker(string[] args, ILogger logger)
         }
 
         handler.Dispose();
+
+        return ErrorCount;
+    }
+
+    private async Task<int> ValidatePackageAsync(string[] args)
+    {
+        var path = args[0];
+
+        var asset = new Asset { name = Path.GetFileName(path) };
+        var package = new Package(asset, path);
+        package.Load();
+
+        var url = package.Metadata?.Website;
+        var options = url.GetGitHubOptions();
+        var client = new GitHubClient(options, logger);
+        var repository = await client.GetRepositoryAsync();
+        var user = await client.GetUserAsync();
+
+        IRule[] rules =
+        [
+            new PackageRules(package),
+            new PackageContentRules(package),
+            new PluginDependenciesRules(package),
+            new PluginMetadataRules(package, repository!, user),
+            new AssemblyRules(package),
+        ];
+
+        Validate(rules);
+        package.Dispose();
 
         return ErrorCount;
     }
