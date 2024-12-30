@@ -14,9 +14,9 @@ public static partial class Extensions
 
     public static bool IsPath(this string arg) => File.Exists(arg);
 
-    public static GitHubOptions GetGitHubOptions(this string? url)
+    public static GitHubOptions? GetGitHubOptions(this string? url)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(url);
+        if (url == null) return null;
 
         var result = new GitHubOptions();
         var match = GitHubRegex().Match(url);
@@ -24,12 +24,11 @@ public static partial class Extensions
         {
             result.Owner = match.Groups[1].Value;
             result.Repo = match.Groups[2].Value;
+
+            return result;
         }
 
-        ArgumentException.ThrowIfNullOrWhiteSpace(result.Owner);
-        ArgumentException.ThrowIfNullOrWhiteSpace(result.Repo);
-
-        return result;
+        return null;
     }
 
     public static string? GetEmbeddedResourceContent(this string name)

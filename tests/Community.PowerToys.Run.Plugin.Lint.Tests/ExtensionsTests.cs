@@ -36,14 +36,11 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
             "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugins?tab=readme-ov-file#bang".GetGitHubOptions().Should()
                 .BeEquivalentTo(new GitHubOptions { Owner = "hlaueriksson", Repo = "Community.PowerToys.Run.Plugins" });
 
-            Action act = () => "https://gitfail.com/hlaueriksson/Community.PowerToys.Run.Plugin.Install".GetGitHubOptions();
-            act.Should().Throw<ArgumentException>();
+            "https://gitfail.com/hlaueriksson/Community.PowerToys.Run.Plugin.Install".GetGitHubOptions().Should().BeNull();
 
-            act = () => "".GetGitHubOptions();
-            act.Should().Throw<ArgumentException>();
+            "".GetGitHubOptions().Should().BeNull();
 
-            act = () => ((string)null!).GetGitHubOptions();
-            act.Should().Throw<ArgumentNullException>();
+            ((string)null!).GetGitHubOptions().Should().BeNull();
         }
 
         [Test]

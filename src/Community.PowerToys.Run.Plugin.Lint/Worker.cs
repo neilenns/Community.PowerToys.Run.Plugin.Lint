@@ -31,9 +31,8 @@ public class Worker(string[] args, ILogger logger)
 
     private async Task<int> ValidateRepositoryAsync(string[] args)
     {
-        var url = args.FirstOrDefault();
-        var options = url.GetGitHubOptions();
-
+        var url = args[0];
+        var options = url.GetGitHubOptions() ?? throw new ArgumentException("Invalid GitHub repo URL", nameof(args));
         var client = new GitHubClient(options, logger);
         var repository = await client.GetRepositoryAsync();
 
@@ -96,9 +95,15 @@ public class Worker(string[] args, ILogger logger)
 
         var url = package.Metadata?.Website;
         var options = url.GetGitHubOptions();
-        var client = new GitHubClient(options, logger);
-        var repository = await client.GetRepositoryAsync();
-        var user = await client.GetUserAsync();
+        Repository? repository = null;
+        User? user = null;
+
+        if (options != null)
+        {
+            var client = new GitHubClient(options, logger);
+            repository = await client.GetRepositoryAsync();
+            user = await client.GetUserAsync();
+        }
 
         IRule[] rules =
         [
