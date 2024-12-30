@@ -8,10 +8,10 @@ public class Worker(string[] args, ILogger logger)
     public event EventHandler<ValidationRuleEventArgs> ValidationRule;
     public event EventHandler<ValidationMessageEventArgs> ValidationMessage;
 
+    private int ErrorCount { get; set; }
+
     public async Task<int> RunAsync()
     {
-        var errorCount = 0;
-
         IRule[] rules =
         [
             new ArgsRules(args),
@@ -19,23 +19,33 @@ public class Worker(string[] args, ILogger logger)
 
         if (Validate(rules))
         {
-            return errorCount;
+            return ErrorCount;
         }
 
+        if (args[0].IsUrl())
+        {
+            return await ValidateRepositoryAsync(args);
+        }
+
+        return ErrorCount;
+    }
+
+    private async Task<int> ValidateRepositoryAsync(string[] args)
+    {
         var url = args.FirstOrDefault();
         var options = url.GetGitHubOptions();
 
         var client = new GitHubClient(options, logger);
         var repository = await client.GetRepositoryAsync();
 
-        rules =
+        IRule[] rules =
         [
             new RepoRules(repository),
         ];
 
         if (Validate(rules))
         {
-            return errorCount;
+            return ErrorCount;
         }
 
         var readme = await client.GetReadmeAsync();
@@ -75,28 +85,28 @@ public class Worker(string[] args, ILogger logger)
 
         handler.Dispose();
 
-        return errorCount;
+        return ErrorCount;
+    }
 
-        bool Validate(IRule[] rules)
+    private bool Validate(IRule[] rules)
+    {
+        var initialErrorCount = ErrorCount;
+        foreach (var rule in rules)
         {
-            var initialErrorCount = errorCount;
-            foreach (var rule in rules)
+            var result = rule.Validate().ToArray();
+            if (result.Length != 0)
             {
-                var result = rule.Validate();
-                if (result.Any())
+                OnValidationRule(rule);
+                foreach (var message in result)
                 {
-                    OnValidationRule(rule);
-                    foreach (var message in result)
-                    {
-                        OnValidationMessage(message);
-                    }
-
-                    errorCount += result.Count();
+                    OnValidationMessage(message);
                 }
-            }
 
-            return initialErrorCount != errorCount;
+                ErrorCount += result.Length;
+            }
         }
+
+        return initialErrorCount != ErrorCount;
     }
 
     // Events
