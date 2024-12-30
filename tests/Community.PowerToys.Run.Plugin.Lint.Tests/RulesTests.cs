@@ -21,7 +21,7 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
             subject.Validate().Clean().Should().BeEquivalentTo(
                 "GitHub repo URL or package path missing");
 
-            subject = new ArgsRules(["https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Update"]);
+            subject = new ArgsRules(["https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Install"]);
             subject.Validate().Clean().Should().BeEmpty();
 
             subject = new ArgsRules([@"..\..\..\Packages\Valid-0.87.0-x64.zip"]);

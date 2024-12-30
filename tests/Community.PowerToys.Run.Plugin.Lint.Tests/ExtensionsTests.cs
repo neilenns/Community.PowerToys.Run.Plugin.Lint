@@ -7,8 +7,8 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
         [Test]
         public void GetGitHubOptions_should_parse_URL()
         {
-            "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Update".GetGitHubOptions().Should()
-                .BeEquivalentTo(new GitHubOptions { Owner = "hlaueriksson", Repo = "Community.PowerToys.Run.Plugin.Update" });
+            "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Install".GetGitHubOptions().Should()
+                .BeEquivalentTo(new GitHubOptions { Owner = "hlaueriksson", Repo = "Community.PowerToys.Run.Plugin.Install" });
 
             "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugins#bang".GetGitHubOptions().Should()
                 .BeEquivalentTo(new GitHubOptions { Owner = "hlaueriksson", Repo = "Community.PowerToys.Run.Plugins" });
@@ -16,7 +16,7 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
             "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugins?tab=readme-ov-file#bang".GetGitHubOptions().Should()
                 .BeEquivalentTo(new GitHubOptions { Owner = "hlaueriksson", Repo = "Community.PowerToys.Run.Plugins" });
 
-            Action act = () => "https://gitfail.com/hlaueriksson/Community.PowerToys.Run.Plugin.Update".GetGitHubOptions();
+            Action act = () => "https://gitfail.com/hlaueriksson/Community.PowerToys.Run.Plugin.Install".GetGitHubOptions();
             act.Should().Throw<ArgumentException>();
 
             act = () => "".GetGitHubOptions();

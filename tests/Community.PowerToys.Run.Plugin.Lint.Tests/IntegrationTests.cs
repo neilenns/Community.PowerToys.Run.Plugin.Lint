@@ -8,9 +8,9 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
     public class IntegrationTests
     {
         [Test]
-        public void Community_PowerToys_Run_Plugin_Update()
+        public void Community_PowerToys_Run_Plugin_Install()
         {
-            var (ExitCode, StandardOutput, StandardError) = Run("https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Update");
+            var (ExitCode, StandardOutput, StandardError) = Run("https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Install");
             ExitCode.Should().Be(0);
             StandardOutput.Should().Contain("Linting");
             StandardError.Should().BeEmpty();

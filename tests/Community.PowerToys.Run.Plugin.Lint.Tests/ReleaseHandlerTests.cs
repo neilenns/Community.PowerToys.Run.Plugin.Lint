@@ -22,8 +22,8 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
                 [
                     new Asset
                     {
-                        browser_download_url = "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Update/releases/download/v0.2.0/Sample-0.2.0-x64.zip",
-                        name = "Sample-0.2.0-x64.zip",
+                        browser_download_url = "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Install/releases/download/v0.1.0/Install-0.1.0-x64.zip",
+                        name = "Install-0.1.0-x64.zip",
                         content_type = "application/x-zip-compressed",
                     }
                 ],
