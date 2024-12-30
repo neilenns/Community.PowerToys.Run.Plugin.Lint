@@ -5,6 +5,26 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
     public class ExtensionsTests
     {
         [Test]
+        public void IsUrl_should_validate_arg()
+        {
+            "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Install".IsUrl().Should().BeTrue();
+            @"..\..\..\Packages\Valid-0.87.0-x64.zip".IsUrl().Should().BeFalse();
+            "".IsUrl().Should().BeFalse();
+            ((string)null!).IsUrl().Should().BeFalse();
+        }
+
+        [Test]
+        public void IsPath_should_validate_arg()
+        {
+            @"..\..\..\Packages\Valid-0.87.0-x64.zip".IsPath().Should().BeTrue();
+            @"..\..\..\Packages".IsPath().Should().BeFalse();
+            @"..\..\..\Fail\Valid-0.87.0-x64.zip".IsPath().Should().BeFalse();
+            "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Install".IsPath().Should().BeFalse();
+            "".IsPath().Should().BeFalse();
+            ((string)null!).IsPath().Should().BeFalse();
+        }
+
+        [Test]
         public void GetGitHubOptions_should_parse_URL()
         {
             "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Install".GetGitHubOptions().Should()
