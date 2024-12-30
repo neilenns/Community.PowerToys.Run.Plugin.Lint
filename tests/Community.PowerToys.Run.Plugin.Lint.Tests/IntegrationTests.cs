@@ -25,6 +25,15 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
             StandardError.Should().BeEmpty();
         }
 
+        [Test]
+        public void Valid()
+        {
+            var (ExitCode, StandardOutput, StandardError) = Run(@"..\..\..\Packages\Valid-0.87.0-x64.zip");
+            ExitCode.Should().Be(1);
+            StandardOutput.Should().ContainAll(["PTRUN1401"]);
+            StandardError.Should().BeEmpty();
+        }
+
         static (int ExitCode, string StandardOutput, string StandardError) Run(string args)
         {
             var startInfo = new ProcessStartInfo
