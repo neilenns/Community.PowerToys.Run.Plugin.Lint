@@ -53,7 +53,12 @@ public class ArgsRules(string[] args) : IRule
             yield break;
         }
 
-        if (!Extensions.GitHubRegex().IsMatch(args[0])) yield return "GitHub repo URL missing";
+        var arg = args[0];
+
+        if (Extensions.GitHubRegex().IsMatch(arg)) yield break;
+        if (File.Exists(arg) && arg.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)) yield break;
+
+        yield return "GitHub repo URL or package path missing";
     }
 }
 
