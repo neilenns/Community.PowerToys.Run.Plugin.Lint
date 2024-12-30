@@ -18,17 +18,14 @@ public static partial class Extensions
     {
         if (url == null) return null;
 
-        var result = new GitHubOptions();
         var match = GitHubRegex().Match(url);
-        if (match.Success)
+        if (!match.Success) return null;
+
+        return new GitHubOptions
         {
-            result.Owner = match.Groups[1].Value;
-            result.Repo = match.Groups[2].Value;
-
-            return result;
-        }
-
-        return null;
+            Owner = match.Groups[1].Value,
+            Repo = match.Groups[2].Value,
+        };
     }
 
     public static string? GetEmbeddedResourceContent(this string name)
