@@ -59,11 +59,11 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
         [Test]
         public void HasValidTargetFramework_should_validate_Assembly()
         {
-            new Package(new(), @"..\..\..\Packages\Valid-0.87.0-x64.zip").Load()
+            new Package(@"..\..\..\Packages\Valid-0.87.0-x64.zip").Load()
                 .HasValidTargetFramework().Should().BeTrue();
-            new Package(new(), @"..\..\..\Packages\InvalidTarget-0.82.1-x64.zip").Load()
+            new Package(@"..\..\..\Packages\InvalidTarget-0.82.1-x64.zip").Load()
                 .HasValidTargetFramework().Should().BeFalse();
-            new Package(new(), "Community.PowerToys.Run.Plugin.Lint.Tests.dll")
+            new Package("Community.PowerToys.Run.Plugin.Lint.Tests.dll")
                 .HasValidTargetFramework().Should().BeFalse();
             ((Package)null!)
                 .HasValidTargetFramework().Should().BeFalse();
@@ -72,11 +72,11 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
         [Test]
         public void HasValidTargetPlatform_should_validate_Assembly()
         {
-            new Package(new(), @"..\..\..\Packages\Valid-0.87.0-x64.zip").Load()
+            new Package(@"..\..\..\Packages\Valid-0.87.0-x64.zip").Load()
                 .HasValidTargetPlatform().Should().BeTrue();
-            new Package(new(), @"..\..\..\Packages\InvalidTarget-0.82.1-x64.zip").Load()
+            new Package(@"..\..\..\Packages\InvalidTarget-0.82.1-x64.zip").Load()
                 .HasValidTargetPlatform().Should().BeFalse();
-            new Package(new(), "Community.PowerToys.Run.Plugin.Lint.Tests.dll")
+            new Package("Community.PowerToys.Run.Plugin.Lint.Tests.dll")
                 .HasValidTargetPlatform().Should().BeFalse();
             ((Package)null!)
                 .HasValidTargetPlatform().Should().BeFalse();

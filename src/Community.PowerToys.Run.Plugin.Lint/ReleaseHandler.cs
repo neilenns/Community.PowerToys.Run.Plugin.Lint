@@ -2,13 +2,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Community.PowerToys.Run.Plugin.Lint;
 
-public interface IReleaseHandler
-{
-    Task<Package[]> GetPackagesAsync();
-    Task<Checksum[]> GetChecksumsAsync();
-}
-
-public sealed class ReleaseHandler(Release? release, ILogger logger) : IReleaseHandler, IDisposable
+public sealed class ReleaseHandler(Release? release, ILogger logger) : IDisposable
 {
     public async Task<Package[]> GetPackagesAsync()
     {
@@ -29,7 +23,7 @@ public sealed class ReleaseHandler(Release? release, ILogger logger) : IReleaseH
             await using var stream = new FileStream(path, FileMode.Create);
             await response.Content.CopyToAsync(stream);
 
-            result.Add(new Package(asset, path));
+            result.Add(new Package(path));
             logger.LogInformation("File downloaded: {Path}", path);
         }
 

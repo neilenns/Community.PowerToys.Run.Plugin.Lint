@@ -4,30 +4,15 @@ using Mono.Cecil;
 
 namespace Community.PowerToys.Run.Plugin.Lint;
 
-public class Metadata
+public sealed class Package(string path) : IDisposable
 {
-    public string ID { get; set; }
-    public string ActionKeyword { get; set; }
-    public bool IsGlobal { get; set; }
-    public string Name { get; set; }
-    public string Author { get; set; }
-    public string Version { get; set; }
-    public string Language { get; set; }
-    public string Website { get; set; }
-    public string ExecuteFileName { get; set; }
-    public string IcoPathDark { get; set; }
-    public string IcoPathLight { get; set; }
-    public bool DynamicLoading { get; set; }
-}
-
-public sealed class Package(Asset asset, string path) : IDisposable
-{
-    public Asset Asset { get; } = asset;
     public FileInfo FileInfo { get; } = new FileInfo(path);
     public FileStream FileStream { get; private set; }
     public ZipArchive ZipArchive { get; private set; }
     public Metadata? Metadata { get; private set; }
     public AssemblyDefinition? AssemblyDefinition { get; private set; }
+
+    public string Name => FileInfo.Name;
 
     public Package Load()
     {
@@ -66,8 +51,22 @@ public sealed class Package(Asset asset, string path) : IDisposable
         ZipArchive?.Dispose();
         FileStream?.Dispose();
     }
+}
 
-    public override string ToString() => Asset.name;
+public class Metadata
+{
+    public string ID { get; set; }
+    public string ActionKeyword { get; set; }
+    public bool IsGlobal { get; set; }
+    public string Name { get; set; }
+    public string Author { get; set; }
+    public string Version { get; set; }
+    public string Language { get; set; }
+    public string Website { get; set; }
+    public string ExecuteFileName { get; set; }
+    public string IcoPathDark { get; set; }
+    public string IcoPathLight { get; set; }
+    public bool DynamicLoading { get; set; }
 }
 
 public class Checksum(string hash, string name)

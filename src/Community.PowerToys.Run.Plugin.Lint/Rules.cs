@@ -149,7 +149,7 @@ public class ReleaseRules(Release? release) : IRule
 public class ReleaseNotesRules(Release release, Package package) : IRule
 {
     public int Id => 1202;
-    public string Description => $"Release notes should be valid {package.ToString().ToFilename()}";
+    public string Description => $"Release notes should be valid {package.Name.ToFilename()}";
 
     public IEnumerable<string> Validate()
     {
@@ -170,7 +170,7 @@ public class ReleaseNotesRules(Release release, Package package) : IRule
 public partial class PackageRules(Package package) : IRule
 {
     public int Id => 1301;
-    public string Description => $"Package should be valid {package.ToString().ToFilename()}";
+    public string Description => $"Package should be valid {package.Name.ToFilename()}";
 
     public IEnumerable<string> Validate()
     {
@@ -190,7 +190,7 @@ public partial class PackageRules(Package package) : IRule
 public class PackageContentRules(Package package) : IRule
 {
     public int Id => 1302;
-    public string Description => $"Package content should be valid {package.ToString().ToFilename()}";
+    public string Description => $"Package content should be valid {package.Name.ToFilename()}";
 
     public IEnumerable<string> Validate()
     {
@@ -215,7 +215,7 @@ public class PackageContentRules(Package package) : IRule
 public class PackageChecksumRules(Release release, Package package, Checksum[] checksums) : IRule
 {
     public int Id => 1303;
-    public string Description => $"Package checksum should be valid {package.ToString().ToFilename()}";
+    public string Description => $"Package checksum should be valid {package.Name.ToFilename()}";
 
     public IEnumerable<string> Validate()
     {
@@ -231,15 +231,9 @@ public class PackageChecksumRules(Release release, Package package, Checksum[] c
             yield break;
         }
 
-        if (package?.Asset?.name == null)
-        {
-            yield return "Package missing";
-            yield break;
-        }
-
         var hash = Hash();
         var validReleaseNotes = release.body.Contains(hash, StringComparison.OrdinalIgnoreCase);
-        var validChecksumsFile = checksums?.Any(x => x.Hash.Equals(hash, StringComparison.OrdinalIgnoreCase) && x.Name.Contains(package.Asset.name, StringComparison.OrdinalIgnoreCase)) == true;
+        var validChecksumsFile = checksums?.Any(x => x.Hash.Equals(hash, StringComparison.OrdinalIgnoreCase) && x.Name.Contains(package.Name, StringComparison.OrdinalIgnoreCase)) == true;
 
         if (!validReleaseNotes && !validChecksumsFile) yield return $"Hash {hash.ToQuote()} missing";
 
@@ -252,10 +246,10 @@ public class PackageChecksumRules(Release release, Package package, Checksum[] c
     }
 }
 
-public partial class PluginMetadataRules(Package package, Repository repository, User? user) : IRule
+public partial class PluginMetadataRules(Package package, Repository repository, User user) : IRule
 {
     public int Id => 1401;
-    public string Description => $"Plugin metadata should be valid {package.ToString().ToFilename()}";
+    public string Description => $"Plugin metadata should be valid {package.Name.ToFilename()}";
 
     public IEnumerable<string> Validate()
     {
@@ -310,7 +304,7 @@ public partial class PluginMetadataRules(Package package, Repository repository,
 public class PluginDependenciesRules(Package package) : IRule
 {
     public int Id => 1402;
-    public string Description => $"Package dependencies should be valid {package.ToString().ToFilename()}";
+    public string Description => $"Package dependencies should be valid {package.Name.ToFilename()}";
 
     public IEnumerable<string> Validate()
     {
@@ -350,7 +344,7 @@ public class PluginDependenciesRules(Package package) : IRule
 public class AssemblyRules(Package package) : IRule
 {
     public int Id => 1501;
-    public string Description => $"Plugin assembly should be valid {package.ToString().ToFilename()}";
+    public string Description => $"Plugin assembly should be valid {package.Name.ToFilename()}";
 
     public IEnumerable<string> Validate()
     {

@@ -12,12 +12,7 @@ public class Worker(string[] args, ILogger logger)
 
     public async Task<int> RunAsync()
     {
-        IRule[] rules =
-        [
-            new ArgsRules(args),
-        ];
-
-        if (Validate(rules))
+        if (Validate([new ArgsRules(args)]))
         {
             return ErrorCount;
         }
@@ -78,7 +73,7 @@ public class Worker(string[] args, ILogger logger)
                 new PackageContentRules(package),
                 new PackageChecksumRules(release!, package, checksums),
                 new PluginDependenciesRules(package),
-                new PluginMetadataRules(package, repository!, user),
+                new PluginMetadataRules(package, repository!, user!),
                 new AssemblyRules(package),
             ];
 
@@ -96,8 +91,7 @@ public class Worker(string[] args, ILogger logger)
     {
         var path = args[0];
 
-        var asset = new Asset { name = Path.GetFileName(path) };
-        var package = new Package(asset, path);
+        var package = new Package(path);
         package.Load();
 
         var url = package.Metadata?.Website;
@@ -111,7 +105,7 @@ public class Worker(string[] args, ILogger logger)
             new PackageRules(package),
             new PackageContentRules(package),
             new PluginDependenciesRules(package),
-            new PluginMetadataRules(package, repository!, user),
+            new PluginMetadataRules(package, repository!, user!),
             new AssemblyRules(package),
         ];
 
