@@ -1,6 +1,9 @@
 using System.IO.Compression;
 using System.Text.Json;
+using Microsoft.CodeAnalysis.MSBuild;
 using Mono.Cecil;
+
+using RoslynProject = Microsoft.CodeAnalysis.Project;
 
 namespace Community.PowerToys.Run.Plugin.Lint;
 
@@ -50,6 +53,45 @@ public sealed class Package(string path) : IDisposable
         AssemblyDefinition?.Dispose();
         ZipArchive?.Dispose();
         FileStream?.Dispose();
+    }
+}
+
+public sealed class Project(string path) : IDisposable
+{
+    public DirectoryInfo DirectoryInfo { get; } = new DirectoryInfo(path);
+    public Metadata? Metadata { get; private set; }
+    public MSBuildWorkspace? RoslynWorkspace { get; private set; }
+    public RoslynProject? RoslynProject { get; private set; }
+
+    public string Name => DirectoryInfo.Name;
+
+    public async Task<Project> LoadAsync()
+    {
+        Metadata = GetMetadata();
+        RoslynWorkspace = MSBuildWorkspace.Create();
+        RoslynProject = await GetProjectAsync();
+
+        Metadata? GetMetadata()
+        {
+            var file = DirectoryInfo.GetFiles("plugin.json", SearchOption.TopDirectoryOnly).SingleOrDefault();
+            if (file == null) return null;
+            var content = File.ReadAllText(file.FullName);
+            return JsonSerializer.Deserialize<Metadata>(content);
+        }
+
+        async Task<RoslynProject?> GetProjectAsync()
+        {
+            var file = DirectoryInfo.GetFiles("*.csproj", SearchOption.TopDirectoryOnly).SingleOrDefault();
+            if (file == null) return null;
+            return await RoslynWorkspace.OpenProjectAsync(file.FullName);
+        }
+
+        return this;
+    }
+
+    public void Dispose()
+    {
+        RoslynWorkspace?.Dispose();
     }
 }
 
