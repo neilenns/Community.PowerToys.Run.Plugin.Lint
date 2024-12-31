@@ -9,6 +9,10 @@ public static partial class Extensions
     [GeneratedRegex(@"^https:\/\/github\.com\/([a-zA-Z0-9._-]+)\/([a-zA-Z0-9._-]+)(?:\/)?(?:\?.*|#.*)?$")]
     public static partial Regex GitHubRegex();
 
+    public static bool IsPersonalAccessToken(this string arg) =>
+        arg?.StartsWith("ghp_", StringComparison.Ordinal) == true ||
+        arg?.StartsWith("github_pat_", StringComparison.Ordinal) == true;
+
     public static bool IsUrl(this string arg) =>
         Uri.TryCreate(arg, UriKind.Absolute, out Uri? uri) &&
         (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps || uri.Scheme == Uri.UriSchemeFtp);

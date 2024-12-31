@@ -5,7 +5,7 @@ using NReco.Logging.File;
 using Spectre.Console;
 
 var config = new ConfigurationBuilder()
-    .SetBasePath(Directory.GetCurrentDirectory())
+    .SetBasePath(AppContext.BaseDirectory)
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
     .Build();
 

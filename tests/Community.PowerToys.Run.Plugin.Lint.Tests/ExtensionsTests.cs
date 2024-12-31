@@ -6,6 +6,17 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
     public class ExtensionsTests
     {
         [Test]
+        public void IsPersonalAccessToken_should_validate_arg()
+        {
+            "ghp_FOOBAR".IsPersonalAccessToken().Should().BeTrue();
+            "github_pat_FOOBAR".IsPersonalAccessToken().Should().BeTrue();
+            "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Install".IsPersonalAccessToken().Should().BeFalse();
+            @"..\..\..\Packages\Valid-0.87.0-x64.zip".IsPersonalAccessToken().Should().BeFalse();
+            "".IsPersonalAccessToken().Should().BeFalse();
+            ((string)null!).IsPersonalAccessToken().Should().BeFalse();
+        }
+
+        [Test]
         public void IsUrl_should_validate_arg()
         {
             "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Install".IsUrl().Should().BeTrue();

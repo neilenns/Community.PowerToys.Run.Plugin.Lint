@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -5,6 +6,8 @@ namespace Community.PowerToys.Run.Plugin.Lint;
 
 public class Worker(string[] args, IConfigurationRoot config, ILogger logger)
 {
+    private readonly JsonSerializerOptions options = new() { WriteIndented = true };
+
     // Events
     public event EventHandler<ValidationRuleEventArgs> ValidationRule;
     public event EventHandler<ValidationMessageEventArgs> ValidationMessage;
@@ -18,7 +21,11 @@ public class Worker(string[] args, IConfigurationRoot config, ILogger logger)
             return ErrorCount;
         }
 
-        if (args[0].IsUrl())
+        if (args[0].IsPersonalAccessToken())
+        {
+            return await SavePersonalAccessTokenAsync(args);
+        }
+        else if (args[0].IsUrl())
         {
             return await ValidateRepositoryAsync(args);
         }
@@ -28,6 +35,27 @@ public class Worker(string[] args, IConfigurationRoot config, ILogger logger)
         }
 
         return ErrorCount;
+    }
+
+    private async Task<int> SavePersonalAccessTokenAsync(string[] args)
+    {
+        var dictionary = config.AsEnumerable()
+            .Where(kvp => !string.IsNullOrEmpty(kvp.Key) && kvp.Value != null)
+            .GroupBy(kvp => kvp.Key.Split(':')[0])
+            .ToDictionary(
+                group => group.Key,
+                group => group
+                    .Where(kvp => kvp.Key.Split(':').Length > 1)
+                    .ToDictionary(
+                        kvp => string.Join(':', kvp.Key.Split(':').Skip(1)),
+                        kvp => kvp.Value));
+
+        dictionary[nameof(GitHubOptions)][nameof(GitHubOptions.PersonalAccessToken)] = args[0];
+
+        var path = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
+        await File.WriteAllTextAsync(path!, JsonSerializer.Serialize(dictionary, options));
+
+        return 0;
     }
 
     private async Task<int> ValidateRepositoryAsync(string[] args)
