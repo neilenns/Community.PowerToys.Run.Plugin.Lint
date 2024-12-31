@@ -50,7 +50,15 @@ public class Worker(string[] args, IConfigurationRoot config, ILogger logger)
                         kvp => string.Join(':', kvp.Key.Split(':').Skip(1)),
                         kvp => kvp.Value));
 
-        dictionary[nameof(GitHubOptions)][nameof(GitHubOptions.PersonalAccessToken)] = args[0];
+        try
+        {
+            dictionary[nameof(GitHubOptions)][nameof(GitHubOptions.PersonalAccessToken)] = args[0];
+        }
+        catch (KeyNotFoundException ex)
+        {
+            logger.LogError(ex, "SavePersonalAccessTokenAsync failed.");
+            return ex.HResult;
+        }
 
         var path = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
         await File.WriteAllTextAsync(path!, JsonSerializer.Serialize(dictionary, options));
