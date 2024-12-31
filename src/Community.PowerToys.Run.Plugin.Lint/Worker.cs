@@ -29,9 +29,13 @@ public class Worker(string[] args, IConfigurationRoot config, ILogger logger)
         {
             return await ValidateRepositoryAsync(args);
         }
-        else if (args[0].IsPath())
+        else if (args[0].IsFile())
         {
             return await ValidatePackageAsync(args);
+        }
+        else if (args[0].IsDirectory())
+        {
+            return await ValidateProjectAsync(args);
         }
 
         return ErrorCount;
@@ -153,6 +157,39 @@ public class Worker(string[] args, IConfigurationRoot config, ILogger logger)
 
         Validate(rules);
         package.Dispose();
+
+        return ErrorCount;
+    }
+
+    private async Task<int> ValidateProjectAsync(string[] args)
+    {
+        var path = args[0];
+
+        var project = new Project(path);
+        await project.LoadAsync();
+
+        var url = project.Metadata?.Website;
+        var options = url.GetGitHubOptions(config);
+        Repository? repository = null;
+        User? user = null;
+
+        if (options != null)
+        {
+            var client = new GitHubClient(options, logger);
+            repository = await client.GetRepositoryAsync();
+            user = await client.GetUserAsync();
+        }
+
+        IRule[] rules =
+        [
+            new ProjectContentRules(project),
+            new ProjectDependenciesRules(project),
+            new ProjectMetadataRules(project, repository!, user!),
+            new ProjectRules(project),
+        ];
+
+        Validate(rules);
+        project.Dispose();
 
         return ErrorCount;
     }

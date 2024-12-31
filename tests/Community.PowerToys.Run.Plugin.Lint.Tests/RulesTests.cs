@@ -19,7 +19,7 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
 
             subject = new ArgsRules(["invalid"]);
             subject.Validate().Clean().Should().BeEquivalentTo(
-                "GitHub repo URL or package path missing");
+                "Args missing: GitHubRepo | Path | PersonalAccessToken");
 
             subject = new ArgsRules(["github_pat_FOOBAR"]);
             subject.Validate().Clean().Should().BeEmpty();
@@ -368,6 +368,89 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
             package = new Package(@"..\..\..\Packages\Valid-0.87.0-x64.zip");
             package.Load();
             subject = new AssemblyRules(package);
+            subject.Validate().Clean().Should().BeEmpty();
+        }
+
+        [Test]
+        public async Task ProjectContentRules_should_validate_Project()
+        {
+            var subject = new ProjectContentRules(null!);
+            subject.Validate().Clean().Should().BeEquivalentTo(
+                "Project missing");
+
+            var project = new Project(@"c:\work\GitHub\Community.PowerToys.Run.Plugin.Install\src\Community.PowerToys.Run.Plugin.Install.UnitTests\");
+            await project.LoadAsync();
+            subject = new ProjectContentRules(project);
+            subject.Validate().Clean().Should().BeEquivalentTo(
+                "Metadata \"plugin.json\" missing");
+
+            project = new Project(@"c:\work\GitHub\Community.PowerToys.Run.Plugin.Install\src\Community.PowerToys.Run.Plugin.Install\");
+            await project.LoadAsync();
+            subject = new ProjectContentRules(project);
+            subject.Validate().Clean().Should().BeEmpty();
+        }
+
+        [Test]
+        public async Task ProjectDependenciesRules_should_validate_Project()
+        {
+            var subject = new ProjectDependenciesRules(null!);
+            subject.Validate().Clean().Should().BeEquivalentTo(
+                "Project missing");
+
+            var project = new Project(@"c:\work\GitHub\Community.PowerToys.Run.Plugin.Install\src\Community.PowerToys.Run.Plugin.Install.UnitTests\");
+            await project.LoadAsync();
+            subject = new ProjectDependenciesRules(project);
+            subject.Validate().Clean().Should().BeEquivalentTo(
+                "Unnecessary dependency: Newtonsoft.Json, consider using System.Text.Json",
+                "Inconstant dependency version: System.IO.Abstractions, use version \"21.0.29\" as defined in Central Package Management (Directory.Packages.props)");
+
+            project = new Project(@"c:\work\GitHub\Community.PowerToys.Run.Plugin.Install\src\Community.PowerToys.Run.Plugin.Install\");
+            await project.LoadAsync();
+            subject = new ProjectDependenciesRules(project);
+            subject.Validate().Clean().Should().BeEmpty();
+        }
+
+        [Test]
+        public async Task ProjectMetadataRules_should_validate_Project()
+        {
+            var subject = new ProjectMetadataRules(null!, null!, null!);
+            subject.Validate().Clean().Should().BeEquivalentTo(
+                "Metadata missing");
+
+            var repository = new Repository
+            {
+                html_url = "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Install",
+            };
+            var user = new User { login = "hlaueriksson" };
+
+            var project = new Project(@"c:\work\GitHub\Community.PowerToys.Run.Plugin.Install\src\Community.PowerToys.Run.Plugin.Install.UnitTests\");
+            await project.LoadAsync();
+            subject = new ProjectMetadataRules(project, repository, user);
+            subject.Validate().Clean().Should().BeEquivalentTo(
+                "Metadata missing");
+
+            project = new Project(@"c:\work\GitHub\Community.PowerToys.Run.Plugin.Install\src\Community.PowerToys.Run.Plugin.Install\");
+            await project.LoadAsync();
+            subject = new ProjectMetadataRules(project, repository, user);
+            subject.Validate().Clean().Should().BeEmpty();
+        }
+
+        [Test]
+        public async Task ProjectRules_should_validate_Project()
+        {
+            var subject = new ProjectRules(null!);
+            subject.Validate().Clean().Should().BeEquivalentTo(
+                "Project missing");
+
+            var project = new Project(@"c:\work\GitHub\Community.PowerToys.Run.Plugin.Install\src\Community.PowerToys.Run.Plugin.Install.UnitTests\");
+            await project.LoadAsync();
+            subject = new ProjectRules(project);
+            subject.Validate().Clean().Should().BeEquivalentTo(
+                "Target framework should be \"net9.0\"");
+
+            project = new Project(@"c:\work\GitHub\Community.PowerToys.Run.Plugin.Install\src\Community.PowerToys.Run.Plugin.Install\");
+            await project.LoadAsync();
+            subject = new ProjectRules(project);
             subject.Validate().Clean().Should().BeEmpty();
         }
     }
