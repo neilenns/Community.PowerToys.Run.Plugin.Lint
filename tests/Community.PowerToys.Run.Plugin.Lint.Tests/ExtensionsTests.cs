@@ -5,10 +5,30 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
     public class ExtensionsTests
     {
         [Test]
+        public void IsUrl_should_validate_arg()
+        {
+            "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Install".IsUrl().Should().BeTrue();
+            @"..\..\..\Packages\Valid-0.87.0-x64.zip".IsUrl().Should().BeFalse();
+            "".IsUrl().Should().BeFalse();
+            ((string)null!).IsUrl().Should().BeFalse();
+        }
+
+        [Test]
+        public void IsPath_should_validate_arg()
+        {
+            @"..\..\..\Packages\Valid-0.87.0-x64.zip".IsPath().Should().BeTrue();
+            @"..\..\..\Packages".IsPath().Should().BeFalse();
+            @"..\..\..\Fail\Valid-0.87.0-x64.zip".IsPath().Should().BeFalse();
+            "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Install".IsPath().Should().BeFalse();
+            "".IsPath().Should().BeFalse();
+            ((string)null!).IsPath().Should().BeFalse();
+        }
+
+        [Test]
         public void GetGitHubOptions_should_parse_URL()
         {
-            "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Update".GetGitHubOptions().Should()
-                .BeEquivalentTo(new GitHubOptions { Owner = "hlaueriksson", Repo = "Community.PowerToys.Run.Plugin.Update" });
+            "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Install".GetGitHubOptions().Should()
+                .BeEquivalentTo(new GitHubOptions { Owner = "hlaueriksson", Repo = "Community.PowerToys.Run.Plugin.Install" });
 
             "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugins#bang".GetGitHubOptions().Should()
                 .BeEquivalentTo(new GitHubOptions { Owner = "hlaueriksson", Repo = "Community.PowerToys.Run.Plugins" });
@@ -16,14 +36,11 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
             "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugins?tab=readme-ov-file#bang".GetGitHubOptions().Should()
                 .BeEquivalentTo(new GitHubOptions { Owner = "hlaueriksson", Repo = "Community.PowerToys.Run.Plugins" });
 
-            Action act = () => "https://gitfail.com/hlaueriksson/Community.PowerToys.Run.Plugin.Update".GetGitHubOptions();
-            act.Should().Throw<ArgumentException>();
+            "https://gitfail.com/hlaueriksson/Community.PowerToys.Run.Plugin.Install".GetGitHubOptions().Should().BeNull();
 
-            act = () => "".GetGitHubOptions();
-            act.Should().Throw<ArgumentException>();
+            "".GetGitHubOptions().Should().BeNull();
 
-            act = () => ((string)null!).GetGitHubOptions();
-            act.Should().Throw<ArgumentNullException>();
+            ((string)null!).GetGitHubOptions().Should().BeNull();
         }
 
         [Test]
@@ -59,11 +76,11 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
         [Test]
         public void HasValidTargetFramework_should_validate_Assembly()
         {
-            new Package(new(), @"..\..\..\Packages\Valid-0.87.0-x64.zip").Load()
+            new Package(@"..\..\..\Packages\Valid-0.87.0-x64.zip").Load()
                 .HasValidTargetFramework().Should().BeTrue();
-            new Package(new(), @"..\..\..\Packages\InvalidTarget-0.82.1-x64.zip").Load()
+            new Package(@"..\..\..\Packages\InvalidTarget-0.82.1-x64.zip").Load()
                 .HasValidTargetFramework().Should().BeFalse();
-            new Package(new(), "Community.PowerToys.Run.Plugin.Lint.Tests.dll")
+            new Package("Community.PowerToys.Run.Plugin.Lint.Tests.dll")
                 .HasValidTargetFramework().Should().BeFalse();
             ((Package)null!)
                 .HasValidTargetFramework().Should().BeFalse();
@@ -72,11 +89,11 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
         [Test]
         public void HasValidTargetPlatform_should_validate_Assembly()
         {
-            new Package(new(), @"..\..\..\Packages\Valid-0.87.0-x64.zip").Load()
+            new Package(@"..\..\..\Packages\Valid-0.87.0-x64.zip").Load()
                 .HasValidTargetPlatform().Should().BeTrue();
-            new Package(new(), @"..\..\..\Packages\InvalidTarget-0.82.1-x64.zip").Load()
+            new Package(@"..\..\..\Packages\InvalidTarget-0.82.1-x64.zip").Load()
                 .HasValidTargetPlatform().Should().BeFalse();
-            new Package(new(), "Community.PowerToys.Run.Plugin.Lint.Tests.dll")
+            new Package("Community.PowerToys.Run.Plugin.Lint.Tests.dll")
                 .HasValidTargetPlatform().Should().BeFalse();
             ((Package)null!)
                 .HasValidTargetPlatform().Should().BeFalse();

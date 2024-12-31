@@ -8,22 +8,24 @@ public static partial class Extensions
     [GeneratedRegex(@"^https:\/\/github\.com\/([a-zA-Z0-9._-]+)\/([a-zA-Z0-9._-]+)(?:\/)?(?:\?.*|#.*)?$")]
     public static partial Regex GitHubRegex();
 
-    public static GitHubOptions GetGitHubOptions(this string? url)
+    public static bool IsUrl(this string arg) =>
+        Uri.TryCreate(arg, UriKind.Absolute, out Uri? uri) &&
+        (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps || uri.Scheme == Uri.UriSchemeFtp);
+
+    public static bool IsPath(this string arg) => File.Exists(arg);
+
+    public static GitHubOptions? GetGitHubOptions(this string? url)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(url);
+        if (url == null) return null;
 
-        var result = new GitHubOptions();
         var match = GitHubRegex().Match(url);
-        if (match.Success)
+        if (!match.Success) return null;
+
+        return new GitHubOptions
         {
-            result.Owner = match.Groups[1].Value;
-            result.Repo = match.Groups[2].Value;
-        }
-
-        ArgumentException.ThrowIfNullOrWhiteSpace(result.Owner);
-        ArgumentException.ThrowIfNullOrWhiteSpace(result.Repo);
-
-        return result;
+            Owner = match.Groups[1].Value,
+            Repo = match.Groups[2].Value,
+        };
     }
 
     public static string? GetEmbeddedResourceContent(this string name)

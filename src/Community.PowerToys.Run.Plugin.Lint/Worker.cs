@@ -8,34 +8,42 @@ public class Worker(string[] args, ILogger logger)
     public event EventHandler<ValidationRuleEventArgs> ValidationRule;
     public event EventHandler<ValidationMessageEventArgs> ValidationMessage;
 
+    private int ErrorCount { get; set; }
+
     public async Task<int> RunAsync()
     {
-        var errorCount = 0;
-
-        IRule[] rules =
-        [
-            new ArgsRules(args),
-        ];
-
-        if (Validate(rules))
+        if (Validate([new ArgsRules(args)]))
         {
-            return errorCount;
+            return ErrorCount;
         }
 
-        var url = args.FirstOrDefault();
-        var options = url.GetGitHubOptions();
+        if (args[0].IsUrl())
+        {
+            return await ValidateRepositoryAsync(args);
+        }
+        else if (args[0].IsPath())
+        {
+            return await ValidatePackageAsync(args);
+        }
 
+        return ErrorCount;
+    }
+
+    private async Task<int> ValidateRepositoryAsync(string[] args)
+    {
+        var url = args[0];
+        var options = url.GetGitHubOptions() ?? throw new ArgumentException("Invalid GitHub repo URL", nameof(args));
         var client = new GitHubClient(options, logger);
         var repository = await client.GetRepositoryAsync();
 
-        rules =
+        IRule[] rules =
         [
             new RepoRules(repository),
         ];
 
         if (Validate(rules))
         {
-            return errorCount;
+            return ErrorCount;
         }
 
         var readme = await client.GetReadmeAsync();
@@ -64,7 +72,7 @@ public class Worker(string[] args, ILogger logger)
                 new PackageContentRules(package),
                 new PackageChecksumRules(release!, package, checksums),
                 new PluginDependenciesRules(package),
-                new PluginMetadataRules(package, repository!, user),
+                new PluginMetadataRules(package, repository!, user!),
                 new AssemblyRules(package),
             ];
 
@@ -75,28 +83,62 @@ public class Worker(string[] args, ILogger logger)
 
         handler.Dispose();
 
-        return errorCount;
+        return ErrorCount;
+    }
 
-        bool Validate(IRule[] rules)
+    private async Task<int> ValidatePackageAsync(string[] args)
+    {
+        var path = args[0];
+
+        var package = new Package(path);
+        package.Load();
+
+        var url = package.Metadata?.Website;
+        var options = url.GetGitHubOptions();
+        Repository? repository = null;
+        User? user = null;
+
+        if (options != null)
         {
-            var initialErrorCount = errorCount;
-            foreach (var rule in rules)
-            {
-                var result = rule.Validate();
-                if (result.Any())
-                {
-                    OnValidationRule(rule);
-                    foreach (var message in result)
-                    {
-                        OnValidationMessage(message);
-                    }
-
-                    errorCount += result.Count();
-                }
-            }
-
-            return initialErrorCount != errorCount;
+            var client = new GitHubClient(options, logger);
+            repository = await client.GetRepositoryAsync();
+            user = await client.GetUserAsync();
         }
+
+        IRule[] rules =
+        [
+            new PackageRules(package),
+            new PackageContentRules(package),
+            new PluginDependenciesRules(package),
+            new PluginMetadataRules(package, repository!, user!),
+            new AssemblyRules(package),
+        ];
+
+        Validate(rules);
+        package.Dispose();
+
+        return ErrorCount;
+    }
+
+    private bool Validate(IRule[] rules)
+    {
+        var initialErrorCount = ErrorCount;
+        foreach (var rule in rules)
+        {
+            var result = rule.Validate().ToArray();
+            if (result.Length != 0)
+            {
+                OnValidationRule(rule);
+                foreach (var message in result)
+                {
+                    OnValidationMessage(message);
+                }
+
+                ErrorCount += result.Length;
+            }
+        }
+
+        return initialErrorCount != ErrorCount;
     }
 
     // Events
