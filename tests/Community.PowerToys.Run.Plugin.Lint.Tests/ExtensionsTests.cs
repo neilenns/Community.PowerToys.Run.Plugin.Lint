@@ -26,14 +26,24 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
         }
 
         [Test]
-        public void IsPath_should_validate_arg()
+        public void IsFile_should_validate_arg()
         {
-            @"..\..\..\Packages\Valid-0.87.0-x64.zip".IsPath().Should().BeTrue();
-            @"..\..\..\Packages".IsPath().Should().BeFalse();
-            @"..\..\..\Fail\Valid-0.87.0-x64.zip".IsPath().Should().BeFalse();
-            "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Install".IsPath().Should().BeFalse();
-            "".IsPath().Should().BeFalse();
-            ((string)null!).IsPath().Should().BeFalse();
+            @"..\..\..\Packages\Valid-0.87.0-x64.zip".IsFile().Should().BeTrue();
+            @"..\..\..\Packages".IsFile().Should().BeFalse();
+            @"..\..\..\Fail\Valid-0.87.0-x64.zip".IsFile().Should().BeFalse();
+            "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Install".IsFile().Should().BeFalse();
+            "".IsFile().Should().BeFalse();
+            ((string)null!).IsFile().Should().BeFalse();
+        }
+
+        [Test]
+        public void IsDirectory_should_validate_arg()
+        {
+            @"..\..\..\..\..\src\Community.PowerToys.Run.Plugin.Lint\".IsDirectory().Should().BeTrue();
+            @"..\..\..\Packages\Valid-0.87.0-x64.zip".IsDirectory().Should().BeFalse();
+            "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Install".IsDirectory().Should().BeFalse();
+            "".IsDirectory().Should().BeFalse();
+            ((string)null!).IsDirectory().Should().BeFalse();
         }
 
         [Test]
