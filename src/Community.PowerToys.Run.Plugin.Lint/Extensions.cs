@@ -1,5 +1,6 @@
 using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Configuration;
 
 namespace Community.PowerToys.Run.Plugin.Lint;
 
@@ -8,13 +9,17 @@ public static partial class Extensions
     [GeneratedRegex(@"^https:\/\/github\.com\/([a-zA-Z0-9._-]+)\/([a-zA-Z0-9._-]+)(?:\/)?(?:\?.*|#.*)?$")]
     public static partial Regex GitHubRegex();
 
+    public static bool IsPersonalAccessToken(this string arg) =>
+        arg?.StartsWith("ghp_", StringComparison.Ordinal) == true ||
+        arg?.StartsWith("github_pat_", StringComparison.Ordinal) == true;
+
     public static bool IsUrl(this string arg) =>
         Uri.TryCreate(arg, UriKind.Absolute, out Uri? uri) &&
         (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps || uri.Scheme == Uri.UriSchemeFtp);
 
     public static bool IsPath(this string arg) => File.Exists(arg);
 
-    public static GitHubOptions? GetGitHubOptions(this string? url)
+    public static GitHubOptions? GetGitHubOptions(this string? url, IConfigurationRoot? config = null)
     {
         if (url == null) return null;
 
@@ -23,6 +28,7 @@ public static partial class Extensions
 
         return new GitHubOptions
         {
+            PersonalAccessToken = config?.GetValue<string>(nameof(GitHubOptions) + ":" + nameof(GitHubOptions.PersonalAccessToken)),
             Owner = match.Groups[1].Value,
             Repo = match.Groups[2].Value,
         };

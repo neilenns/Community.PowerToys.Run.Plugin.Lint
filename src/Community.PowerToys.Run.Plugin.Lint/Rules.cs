@@ -55,6 +55,7 @@ public class ArgsRules(string[] args) : IRule
 
         var arg = args[0];
 
+        if (arg.IsPersonalAccessToken()) yield break;
         if (Extensions.GitHubRegex().IsMatch(arg)) yield break;
         if (File.Exists(arg) && arg.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)) yield break;
 

@@ -1,9 +1,21 @@
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 
 namespace Community.PowerToys.Run.Plugin.Lint.Tests
 {
     public class ExtensionsTests
     {
+        [Test]
+        public void IsPersonalAccessToken_should_validate_arg()
+        {
+            "ghp_FOOBAR".IsPersonalAccessToken().Should().BeTrue();
+            "github_pat_FOOBAR".IsPersonalAccessToken().Should().BeTrue();
+            "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Install".IsPersonalAccessToken().Should().BeFalse();
+            @"..\..\..\Packages\Valid-0.87.0-x64.zip".IsPersonalAccessToken().Should().BeFalse();
+            "".IsPersonalAccessToken().Should().BeFalse();
+            ((string)null!).IsPersonalAccessToken().Should().BeFalse();
+        }
+
         [Test]
         public void IsUrl_should_validate_arg()
         {
@@ -41,6 +53,21 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
             "".GetGitHubOptions().Should().BeNull();
 
             ((string)null!).GetGitHubOptions().Should().BeNull();
+        }
+
+        [Test]
+        public void GetGitHubOptions_should_include_config()
+        {
+            var settings = new Dictionary<string, string?>
+            {
+                { "GitHubOptions:PersonalAccessToken", "PersonalAccessToken" },
+            };
+            var config = new ConfigurationBuilder()
+                .AddInMemoryCollection(settings)
+                .Build();
+
+            "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Install".GetGitHubOptions(config).Should()
+                .BeEquivalentTo(new GitHubOptions { Owner = "hlaueriksson", Repo = "Community.PowerToys.Run.Plugin.Install", PersonalAccessToken = "PersonalAccessToken" });
         }
 
         [Test]

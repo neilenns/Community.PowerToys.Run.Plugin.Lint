@@ -1,7 +1,13 @@
 using Community.PowerToys.Run.Plugin.Lint;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NReco.Logging.File;
 using Spectre.Console;
+
+var config = new ConfigurationBuilder()
+    .SetBasePath(AppContext.BaseDirectory)
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .Build();
 
 using var factory = LoggerFactory.Create(builder => builder.AddFile("ptrun-lint.log", append: true));
 var logger = factory.CreateLogger<Program>();
@@ -11,7 +17,7 @@ return await AnsiConsole.Status()
     {
         logger.LogInformation("Linting: {Args}", args);
 
-        var worker = new Worker(args, logger);
+        var worker = new Worker(args, config, logger);
 
         // Events
         worker.ValidationRule += (object? sender, ValidationRuleEventArgs e) => Log($"{e.Rule.Code.ToCode()} {e.Rule.Description}");
