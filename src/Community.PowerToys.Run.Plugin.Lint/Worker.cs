@@ -1,8 +1,9 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Community.PowerToys.Run.Plugin.Lint;
 
-public class Worker(string[] args, ILogger logger)
+public class Worker(string[] args, IConfigurationRoot config, ILogger logger)
 {
     // Events
     public event EventHandler<ValidationRuleEventArgs> ValidationRule;
@@ -32,7 +33,7 @@ public class Worker(string[] args, ILogger logger)
     private async Task<int> ValidateRepositoryAsync(string[] args)
     {
         var url = args[0];
-        var options = url.GetGitHubOptions() ?? throw new ArgumentException("Invalid GitHub repo URL", nameof(args));
+        var options = url.GetGitHubOptions(config);
         var client = new GitHubClient(options, logger);
         var repository = await client.GetRepositoryAsync();
 
@@ -94,7 +95,7 @@ public class Worker(string[] args, ILogger logger)
         package.Load();
 
         var url = package.Metadata?.Website;
-        var options = url.GetGitHubOptions();
+        var options = url.GetGitHubOptions(config);
         Repository? repository = null;
         User? user = null;
 

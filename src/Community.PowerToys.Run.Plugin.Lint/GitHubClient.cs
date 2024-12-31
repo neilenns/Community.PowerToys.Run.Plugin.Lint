@@ -13,7 +13,7 @@ public interface IGitHubClient
 
 public class GitHubClient : IGitHubClient
 {
-    public GitHubClient(GitHubOptions options, ILogger logger)
+    public GitHubClient(GitHubOptions? options, ILogger logger)
     {
         ArgumentNullException.ThrowIfNull(options);
 
@@ -96,7 +96,7 @@ public class GitHubClient : IGitHubClient
 
 public class GitHubOptions
 {
-    public string PersonalAccessToken { get; set; }
+    public string? PersonalAccessToken { get; set; }
     public string Owner { get; set; }
     public string Repo { get; set; }
 }

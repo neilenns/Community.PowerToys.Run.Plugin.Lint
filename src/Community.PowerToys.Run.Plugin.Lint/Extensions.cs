@@ -1,5 +1,6 @@
 using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Configuration;
 
 namespace Community.PowerToys.Run.Plugin.Lint;
 
@@ -14,7 +15,7 @@ public static partial class Extensions
 
     public static bool IsPath(this string arg) => File.Exists(arg);
 
-    public static GitHubOptions? GetGitHubOptions(this string? url)
+    public static GitHubOptions? GetGitHubOptions(this string? url, IConfigurationRoot? config = null)
     {
         if (url == null) return null;
 
@@ -23,6 +24,7 @@ public static partial class Extensions
 
         return new GitHubOptions
         {
+            PersonalAccessToken = config?.GetValue<string>(nameof(GitHubOptions) + ":" + nameof(GitHubOptions.PersonalAccessToken)),
             Owner = match.Groups[1].Value,
             Repo = match.Groups[2].Value,
         };

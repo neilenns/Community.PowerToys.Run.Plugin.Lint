@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 
 namespace Community.PowerToys.Run.Plugin.Lint.Tests
 {
@@ -41,6 +42,21 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
             "".GetGitHubOptions().Should().BeNull();
 
             ((string)null!).GetGitHubOptions().Should().BeNull();
+        }
+
+        [Test]
+        public void GetGitHubOptions_should_include_config()
+        {
+            var settings = new Dictionary<string, string?>
+            {
+                { "GitHubOptions:PersonalAccessToken", "PersonalAccessToken" },
+            };
+            var config = new ConfigurationBuilder()
+                .AddInMemoryCollection(settings)
+                .Build();
+
+            "https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Install".GetGitHubOptions(config).Should()
+                .BeEquivalentTo(new GitHubOptions { Owner = "hlaueriksson", Repo = "Community.PowerToys.Run.Plugin.Install", PersonalAccessToken = "PersonalAccessToken" });
         }
 
         [Test]
