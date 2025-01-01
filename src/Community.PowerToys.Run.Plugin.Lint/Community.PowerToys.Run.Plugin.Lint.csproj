@@ -5,11 +5,12 @@
     <TargetFramework>net9.0</TargetFramework>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>ptrun-lint</ToolCommandName>
-    <Version>0.3.0</Version>
+    <Version>0.4.0</Version>
     <PackageReleaseNotes>
-- Bump target framework to net9.0
-- Support for GitHub name as author
-- Support for checksums file
+New:
+- Lint a package on the local filesystem
+- Lint a project on the local filesystem
+- Save a GitHub Personal Access Token
     </PackageReleaseNotes>
     <Authors>Henrik Lau Eriksson</Authors>
     <Description>Linter for PowerToys Run community plugins</Description>
