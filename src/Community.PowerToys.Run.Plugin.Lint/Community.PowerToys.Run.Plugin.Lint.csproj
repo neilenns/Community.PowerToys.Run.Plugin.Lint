@@ -19,6 +19,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>plugin;plugins;powertoys;microsoft-powertoys;powertoys-run;powertoys-run-plugin</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <NoWarn>NU1903</NoWarn>
   </PropertyGroup>
 
   <Import Project="../../Analyzers.props" />
@@ -33,6 +34,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.12.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.12.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.12.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
     <PackageReference Include="Mono.Cecil" Version="0.11.6" />
     <PackageReference Include="NReco.Logging.File" Version="1.2.2" />

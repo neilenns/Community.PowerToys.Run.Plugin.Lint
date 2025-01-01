@@ -19,4 +19,10 @@
     <ProjectReference Include="..\..\src\Community.PowerToys.Run.Plugin.Lint\Community.PowerToys.Run.Plugin.Lint.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Projects\**" />
+    <EmbeddedResource Remove="Projects\**" />
+    <None Remove="Projects\**" />
+  </ItemGroup>
+
 </Project>

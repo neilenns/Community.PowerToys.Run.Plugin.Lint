@@ -3,6 +3,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Spectre.Console;
@@ -58,8 +61,9 @@ public class ArgsRules(string[] args) : IRule
         if (arg.IsPersonalAccessToken()) yield break;
         if (Extensions.GitHubRegex().IsMatch(arg)) yield break;
         if (File.Exists(arg) && arg.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)) yield break;
+        if (arg.IsDirectory()) yield break;
 
-        yield return "GitHub repo URL or package path missing";
+        yield return "Args missing: GitHubRepo | Path | PersonalAccessToken";
     }
 }
 
@@ -402,6 +406,204 @@ public class AssemblyRules(Package package) : IRule
                             }
                         }
                     }
+                }
+            }
+
+            return null;
+        }
+    }
+}
+
+public class ProjectContentRules(Project project) : IRule
+{
+    public int Id => 2001;
+    public string Description => $"Project content should be valid {project.Name.ToFilename()}";
+
+    public IEnumerable<string> Validate()
+    {
+        if (project == null)
+        {
+            yield return "Project missing";
+            yield break;
+        }
+
+        var files = Files();
+        if (!files.Contains("plugin.json")) yield return $"Metadata {"plugin.json".ToQuote()} missing";
+
+        string[] Files() => [.. project.DirectoryInfo.GetFiles().Select(x => x.Name)];
+    }
+}
+
+public class ProjectDependenciesRules(Project project) : IRule
+{
+    public int Id => 2101;
+    public string Description => $"Project dependencies should be valid {project.Name.ToFilename()}";
+
+    public IEnumerable<string> Validate()
+    {
+        if (project?.RoslynProject == null)
+        {
+            yield return "Project missing";
+            yield break;
+        }
+
+        var dependencies = Dependencies();
+
+        if (dependencies.Any(x => x.Name.Equals("Newtonsoft.Json", StringComparison.OrdinalIgnoreCase))) yield return $"Unnecessary dependency: {"Newtonsoft.Json".ToDependency()}, consider using {"System.Text.Json".ToDependency()}";
+
+        foreach (var package in PowerToysPackages())
+        {
+            if (dependencies.Any(x => x.Name.Equals(package.Name, StringComparison.OrdinalIgnoreCase) && x.Version != package.Version)) yield return $"Inconstant dependency version: {package.Name.ToDependency()}, use version {package.Version.ToQuote()} as defined in Central Package Management {"Directory.Packages.props".ToFilename()}";
+        }
+
+        (string Name, string Version)[] Dependencies()
+        {
+            return [.. project.RoslynProject.MetadataReferences
+                .Where(x => x.Display?.Contains(".nuget", StringComparison.Ordinal) == true)
+                .Select(x => Dependency(x.Display!))
+                .Where(x => x != null)
+                .Distinct()
+                .Cast<(string, string)>()];
+
+            (string Name, string Version)? Dependency(string path)
+            {
+                var parts = path.Split(Path.DirectorySeparatorChar);
+                var packageIndex = Array.IndexOf(parts, ".nuget") + 2;
+
+                if (packageIndex < 0 || packageIndex + 1 >= parts.Length) return null;
+
+                return (parts[packageIndex], parts[packageIndex + 1]);
+            }
+        }
+
+        (string Name, string Version)[] PowerToysPackages()
+        {
+            var content = "Directory.Packages.props.xml".GetEmbeddedResourceContent();
+            if (content == null) return [];
+            return XDocument.Parse(content)
+                .Descendants("PackageVersion")
+                .Select(x => (x.Attribute("Include")?.Value, x.Attribute("Version")?.Value))
+                .ToArray()!;
+        }
+    }
+}
+
+public partial class ProjectMetadataRules(Project project, Repository repository, User user) : IRule
+{
+    public int Id => 2201;
+    public string Description => $"Project metadata should be valid {project.Name.ToFilename()}";
+
+    public IEnumerable<string> Validate()
+    {
+        if (project?.Metadata == null)
+        {
+            yield return "Metadata missing";
+            yield break;
+        }
+
+        if (repository == null)
+        {
+            yield return "Repository missing";
+            yield break;
+        }
+
+        if (user == null)
+        {
+            yield return "User missing";
+            yield break;
+        }
+
+        var metadata = project.Metadata;
+        string[] actionKeyword = ["=", "?", "!!", ".", "o:", ":", "!", ">", ")", "%%", "#", "//", "{", "??", "$", "_", "<",];
+
+        if (!Guid.TryParseExact(metadata.ID, "N", out Guid _)) yield return "ID is invalid";
+        if (actionKeyword.Contains(metadata.ActionKeyword)) yield return "ActionKeyword is not unique";
+        /*if (metadata.Name != RootFolder()) yield return "Name does not match plugin folder";*/
+        if (!metadata.HasValidAuthor(user)) yield return "Author does not match GitHub user";
+        if (!Version.TryParse(metadata.Version, out Version? _)) yield return "Version is invalid";
+        /*if (metadata.Version != GetFilenameVersion()) yield return "Version does not match filename version";*/
+        if (metadata.Website != repository.html_url) yield return "Website does not match repo URL";
+        if (metadata.ExecuteFileName != project.RoslynProject?.AssemblyName + ".dll") yield return "ExecuteFileName missing in project";
+        if (!AssemblyRegex().IsMatch(project.Metadata.ExecuteFileName)) yield return $"ExecuteFileName does not match {"Community.PowerToys.Run.Plugin.<Name>.dll".ToQuote()} convention";
+        if (!Exists(metadata.IcoPathDark)) yield return "IcoPathDark missing in project";
+        if (!Exists(metadata.IcoPathLight)) yield return "IcoPathLight missing in project";
+        /*if (DynamicLoadingUnnecessary(metadata.DynamicLoading)) yield return "DynamicLoading is unnecessary";*/
+
+        bool Exists(string path) =>
+            project.DirectoryInfo.GetFiles("*", SearchOption.AllDirectories)
+            .Any(x =>
+                x.DirectoryName?.Contains(@"\bin\", StringComparison.Ordinal) == false &&
+                x.DirectoryName?.Contains(@"\obj\", StringComparison.Ordinal) == false &&
+                NormalizePath(x.FullName).EndsWith(NormalizePath(path), StringComparison.Ordinal));
+        string NormalizePath(string path) => path.Replace('\\', '/');
+    }
+
+    [GeneratedRegex(@"^Community\.PowerToys\.Run\.Plugin\.(.+)\.dll$")]
+    private static partial Regex AssemblyRegex();
+}
+
+public class ProjectRules(Project project) : IRule
+{
+    public int Id => 2301;
+    public string Description => $"Project should be valid {project.Name.ToFilename()}";
+
+    public IEnumerable<string> Validate()
+    {
+        if (project?.RoslynProject == null)
+        {
+            yield return "Project missing";
+            yield break;
+        }
+
+        var symbols = project.RoslynProject.ParseOptions?.PreprocessorSymbolNames;
+
+        if (symbols == null)
+        {
+            yield return "Symbols missing";
+            yield break;
+        }
+
+        if (!symbols.Contains("NET9_0")) yield return $"Target framework should be {"net9.0".ToQuote()}";
+        if (!symbols.Contains("WINDOWS")) yield return $"Target platform should be {"windows".ToQuote()}";
+
+        var pluginId = PluginId();
+        if (pluginId != project.Metadata?.ID) yield return $"Main.PluginID does not match metadata {"plugin.json".ToFilename()} ID";
+
+        string? PluginId()
+        {
+#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
+#pragma warning disable VSTHRD104 // Offer async methods
+            var compilation = project.RoslynProject!.GetCompilationAsync().Result;
+#pragma warning restore VSTHRD104 // Offer async methods
+#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
+            if (compilation == null) return null;
+
+            foreach (var syntaxTree in compilation.SyntaxTrees)
+            {
+                var semanticModel = compilation.GetSemanticModel(syntaxTree);
+                var classDeclaration = syntaxTree.GetRoot().DescendantNodes()
+                    .OfType<ClassDeclarationSyntax>()
+                    .SingleOrDefault(x =>
+                    {
+                        var classSymbol = semanticModel.GetDeclaredSymbol(x);
+                        return classSymbol != null && (classSymbol.BaseType?.Name == "IPlugin" || classSymbol.Interfaces.Any(x => x.Name == "IPlugin"));
+                    });
+                var propertyDeclaration = classDeclaration?.Members
+                    .OfType<PropertyDeclarationSyntax>()
+                    .SingleOrDefault(x =>
+                    {
+                        var propertySymbol = semanticModel.GetDeclaredSymbol(x);
+                        return propertySymbol?.Name == "PluginID" && propertySymbol.IsStatic && propertySymbol.Type.SpecialType == SpecialType.System_String;
+                    });
+
+                if (propertyDeclaration?.ExpressionBody?.Expression is LiteralExpressionSyntax literalExpression)
+                {
+                    return literalExpression.Token.ValueText;
+                }
+
+                if (propertyDeclaration?.Initializer?.Value is LiteralExpressionSyntax initializerLiteral)
+                {
+                    return initializerLiteral.Token.ValueText;
                 }
             }
 

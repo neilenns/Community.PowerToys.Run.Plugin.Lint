@@ -17,7 +17,9 @@ public static partial class Extensions
         Uri.TryCreate(arg, UriKind.Absolute, out Uri? uri) &&
         (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps || uri.Scheme == Uri.UriSchemeFtp);
 
-    public static bool IsPath(this string arg) => File.Exists(arg);
+    public static bool IsFile(this string arg) => File.Exists(arg);
+
+    public static bool IsDirectory(this string arg) => Directory.Exists(arg);
 
     public static GitHubOptions? GetGitHubOptions(this string? url, IConfigurationRoot? config = null)
     {
