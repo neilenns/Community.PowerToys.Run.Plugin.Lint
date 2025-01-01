@@ -538,9 +538,6 @@ public partial class ProjectMetadataRules(Project project, Repository repository
         string NormalizePath(string path) => path.Replace('\\', '/');
     }
 
-    [GeneratedRegex(@"(\d+\.\d+\.\d+)")]
-    private static partial Regex FilenameVersionRegex();
-
     [GeneratedRegex(@"^Community\.PowerToys\.Run\.Plugin\.(.+)\.dll$")]
     private static partial Regex AssemblyRegex();
 }
@@ -575,7 +572,9 @@ public class ProjectRules(Project project) : IRule
         string? PluginId()
         {
 #pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
+#pragma warning disable VSTHRD104 // Offer async methods
             var compilation = project.RoslynProject!.GetCompilationAsync().Result;
+#pragma warning restore VSTHRD104 // Offer async methods
 #pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
             if (compilation == null) return null;
 
@@ -594,7 +593,7 @@ public class ProjectRules(Project project) : IRule
                     .SingleOrDefault(x =>
                     {
                         var propertySymbol = semanticModel.GetDeclaredSymbol(x);
-                        return propertySymbol != null && propertySymbol.Name == "PluginID" && propertySymbol.IsStatic && propertySymbol.Type.SpecialType == SpecialType.System_String;
+                        return propertySymbol?.Name == "PluginID" && propertySymbol.IsStatic && propertySymbol.Type.SpecialType == SpecialType.System_String;
                     });
 
                 if (propertyDeclaration?.ExpressionBody?.Expression is LiteralExpressionSyntax literalExpression)
