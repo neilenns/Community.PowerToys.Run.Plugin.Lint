@@ -459,16 +459,14 @@ public class ProjectDependenciesRules(Project project) : IRule
         (string Name, string Version)[] Dependencies()
         {
             return [.. project.RoslynProject.MetadataReferences
-                .Where(x => x.Display != null && x.Display.Contains(".nuget", StringComparison.Ordinal))
-                .Select(x => Dependency(x.Display))
+                .Where(x => x.Display?.Contains(".nuget", StringComparison.Ordinal) == true)
+                .Select(x => Dependency(x.Display!))
                 .Where(x => x != null)
                 .Distinct()
                 .Cast<(string, string)>()];
 
-            (string Name, string Version)? Dependency(string? path)
+            (string Name, string Version)? Dependency(string path)
             {
-                if (path == null) return null;
-
                 var parts = path.Split(Path.DirectorySeparatorChar);
                 var packageIndex = Array.IndexOf(parts, ".nuget") + 2;
 
