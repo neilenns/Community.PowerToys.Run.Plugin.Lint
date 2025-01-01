@@ -20,17 +20,17 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
         public void Package_Valid()
         {
             var (ExitCode, StandardOutput, StandardError) = Run(@"..\..\..\Packages\Valid-0.87.0-x64.zip");
-            ExitCode.Should().Be(1);
-            StandardOutput.Should().ContainAll(["PTRUN1401"]);
+            ExitCode.Should().Be(0);
+            StandardOutput.Should().Contain("Linting");
             StandardError.Should().BeEmpty();
         }
 
         [Test]
-        public void Project_Install()
+        public void Project_Valid()
         {
-            var (ExitCode, StandardOutput, StandardError) = Run(@"c:\work\GitHub\Community.PowerToys.Run.Plugin.Install\src\Community.PowerToys.Run.Plugin.Install\");
-            ExitCode.Should().Be(1);
-            StandardOutput.Should().ContainAll(["PTRUN1401"]);
+            var (ExitCode, StandardOutput, StandardError) = Run(@"..\..\..\Projects\Valid");
+            ExitCode.Should().Be(0);
+            StandardOutput.Should().Contain("Linting");
             StandardError.Should().BeEmpty();
         }
 

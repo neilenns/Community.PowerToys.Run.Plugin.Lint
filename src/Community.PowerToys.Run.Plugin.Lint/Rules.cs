@@ -589,7 +589,7 @@ public class ProjectRules(Project project) : IRule
                     .SingleOrDefault(x =>
                     {
                         var classSymbol = semanticModel.GetDeclaredSymbol(x);
-                        return classSymbol != null && classSymbol.BaseType?.Name == "IPlugin";
+                        return classSymbol != null && (classSymbol.BaseType?.Name == "IPlugin" || classSymbol.Interfaces.Any(x => x.Name == "IPlugin"));
                     });
                 var propertyDeclaration = classDeclaration?.Members
                     .OfType<PropertyDeclarationSyntax>()

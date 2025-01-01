@@ -1,0 +1,14 @@
+{
+  "ID": "00C18E2C357F437ABD7DF02D9F957CD0",
+  "ActionKeyword": "valid",
+  "IsGlobal": false,
+  "Name": "Valid",
+  "Author": "hlaueriksson",
+  "Version": "0.87.0",
+  "Language": "csharp",
+  "Website": "https://github.com/hlaueriksson/Valid",
+  "ExecuteFileName": "Community.PowerToys.Run.Plugin.Valid.dll",
+  "IcoPathDark": "Images\\valid.dark.png",
+  "IcoPathLight": "Images\\valid.light.png",
+  "DynamicLoading": false
+}
