@@ -31,11 +31,21 @@ dotnet tool uninstall -g Community.PowerToys.Run.Plugin.Lint
 
 ```cmd
 ptrun-lint <url>
+ptrun-lint <path>
+ptrun-lint <pat>
 ```
 
 Arguments:
 
 - `<url>` - An URL to a GitHub repo
+- `<path>` - A path to a `zip` package or `dotnet` project on the filesystem
+- `<pat>` - A GitHub Personal Access Token
+
+Logs are written to a file, `ptrun-lint.log`, in the same directory as the tool was executed.
+
+### Repository
+
+Validates a GitHub repository.
 
 Example:
 
@@ -46,7 +56,49 @@ ptrun-lint https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Instal
 During linting, GitHub release assets are downloaded to `%LocalAppData%\Temp`.
 After linting is completed, downloaded files are deleted.
 
-Logs are written to a file, `ptrun-lint.log`, in the same directory as the tool was executed.
+### Package
+
+Validates a package on the local filesystem.
+
+Examples:
+
+```cmd
+ptrun-lint c:\Users\Henrik\Downloads\Install-0.1.0-x64.zip
+ptrun-lint Install-0.1.0-x64.zip
+```
+
+### Project
+
+Validates a project on the local filesystem.
+
+Examples:
+
+```cmd
+ptrun-lint c:\work\GitHub\Community.PowerToys.Run.Plugin.Install\src\Community.PowerToys.Run.Plugin.Install\
+ptrun-lint .
+```
+
+### PersonalAccessToken
+
+Saves a GitHub Personal Access Token to the `appsettings.json` file.
+
+Examples:
+
+```cmd
+ptrun-lint github_pat_FOOBAR
+ptrun-lint ghp_FOOBAR
+```
+
+This will increase the GitHub REST API rate limit.
+
+Location:
+
+- `%UserProfile%\.dotnet\tools\.store\community.powertoys.run.plugin.lint\<version>\community.powertoys.run.plugin.lint\<version>\tools\net9.0\any\appsettings.json`
+
+Documentation:
+
+- [Creating a fine-grained personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token)
+- [Rate limits for the REST API](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28)
 
 ## Rules
 
@@ -54,7 +106,7 @@ Logs are written to a file, `ptrun-lint.log`, in the same directory as the tool 
 | --- | --- |
 | `PTRUN0001` | Args should be valid |
 | | Args missing |
-| | GitHub repo URL missing |
+| | Args missing: GitHubRepo \| Path \| PersonalAccessToken |
 | `PTRUN1001` | Repo should be valid |
 | | Repository missing |
 | `PTRUN1002` | Repo details should be valid |
@@ -113,6 +165,32 @@ Logs are written to a file, `ptrun-lint.log`, in the same directory as the tool 
 | | Unnecessary dependency: `<dependency>`, already defined in Central Package Management (`Directory.Packages.props`) |
 | `PTRUN1501` | Plugin assembly should be valid (`<package>`) |
 | | Assembly could not be validated |
+| | Target framework should be "`net9.0`" |
+| | Target platform should be "`windows`" |
+| | Main.PluginID does not match metadata (`plugin.json`) ID |
+| `PTRUN2001` | Project content should be valid (`<project>`) |
+| | Project missing |
+| | Metadata "`plugin.json`" missing |
+| `PTRUN2101` | Project dependencies should be valid (`<project>`) |
+| | Project missing |
+| | Unnecessary dependency: `Newtonsoft.Json`, consider using `System.Text.Json` |
+| | Inconstant dependency version: `<dependency>`, use version `<version>` as defined in Central Package Management (`Directory.Packages.props`) |
+| `PTRUN2201` | Project metadata should be valid (`<project>`) |
+| | Metadata missing |
+| | Repository missing |
+| | User missing |
+| | ID is invalid |
+| | ActionKeyword is not unique |
+| | Author does not match GitHub user |
+| | Version is invalid |
+| | Website does not match repo URL |
+| | ExecuteFileName missing in package |
+| | ExecuteFileName does not match "`Community.PowerToys.Run.Plugin.<Name>.dll`" convention |
+| | IcoPathDark missing in package |
+| | IcoPathLight missing in package |
+| `PTRUN2301` | Project should be valid (`<project>`) |
+| | Project missing |
+| | Symbols missing |
 | | Target framework should be "`net9.0`" |
 | | Target platform should be "`windows`" |
 | | Main.PluginID does not match metadata (`plugin.json`) ID |
