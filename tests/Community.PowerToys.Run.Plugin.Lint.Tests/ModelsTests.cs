@@ -37,14 +37,14 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
         [Test]
         public void Project_ctor()
         {
-            var subject = new Project(@"c:\work\GitHub\Community.PowerToys.Run.Plugin.Install\src\Community.PowerToys.Run.Plugin.Install\");
+            var subject = new Project(@"..\..\..\Projects\Valid");
             subject.DirectoryInfo.Should().NotBeNull();
         }
 
         [Test]
         public async Task Project_LoadAsync()
         {
-            var subject = new Project(@"c:\work\GitHub\Community.PowerToys.Run.Plugin.Install\src\Community.PowerToys.Run.Plugin.Install\");
+            var subject = new Project(@"..\..\..\Projects\Valid");
             await subject.LoadAsync();
             subject.Metadata.Should().NotBeNull();
             subject.RoslynWorkspace.Should().NotBeNull();
@@ -54,7 +54,7 @@ namespace Community.PowerToys.Run.Plugin.Lint.Tests
         [Test]
         public async Task Project_Dispose()
         {
-            var subject = new Project(@"c:\work\GitHub\Community.PowerToys.Run.Plugin.Install\src\Community.PowerToys.Run.Plugin.Install\");
+            var subject = new Project(@"..\..\..\Projects\Valid");
             await subject.LoadAsync();
             subject.Dispose();
         }
