@@ -5,6 +5,10 @@
 
 > Linter for PowerToys Run community plugins
 
+This is a `dotnet` tool that requires:
+
+- [.NET 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
+
 ## Installation
 
 Install:
